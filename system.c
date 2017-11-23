@@ -147,7 +147,7 @@ void cfg_dma(void)
     // must be enabled.  For software based transfers, a request must be
     // issued.  After this, the uDMA memory transfer begins.
     //
-    ROM_uDMAChannelEnable(UDMA_CHANNEL_SW);
+    //ROM_uDMAChannelEnable(UDMA_CHANNEL_SW);
     //ROM_uDMAChannelRequest(UDMA_CHANNEL_SW);
     //ROM_IntDisable(INT_UDMA);
 }
@@ -167,7 +167,7 @@ void cfg_wdt(void)
     //
     // Set the period of the watchdog timer.
     //
-    ROM_WatchdogReloadSet(WATCHDOG0_BASE, g_ui32SysClock*10);
+    ROM_WatchdogReloadSet(WATCHDOG0_BASE, g_ui32SysClock);
 
     //
     // Enable reset generation from the watchdog timer.
@@ -590,7 +590,6 @@ void cfg_uartext(uint32_t uartbase, uint32_t baurate, uint32_t mode)
                                    UDMA_MODE_PINGPONG,
                                    (void *)(UART1_BASE + UART_O_DR),
                                    g_UART3RX2, sizeof(g_UART3RX2));
-        //ROM_uDMAChannelAttributeEnable(UDMA_CH16_UART3RX, UDMA_ATTR_ALL);
         ROM_uDMAChannelEnable(UDMA_CH16_UART3RX);
         ROM_uDMAChannelRequest(UDMA_CH16_UART3RX);
         //ROM_UARTIntEnable(UART3_BASE, UART_INT_DMARX);
@@ -767,10 +766,17 @@ WatchdogIntHandler(void)
     //
     ROM_WatchdogIntClear(WATCHDOG0_BASE);
 
+}
+
+//*****************************************************************************
+//
+// The interrupt handler for the second timer interrupt.
+//
+//*****************************************************************************
+void Timer5IntHandler(void) {
+
     //
-    // Invert the GPIO PF3 value.
+    // Clear the timer interrupt.
     //
-    ROM_GPIOPinWrite(GPIO_PORTG_BASE, GPIO_PIN_2,
-                     (ROM_GPIOPinRead(GPIO_PORTG_BASE, GPIO_PIN_2) ^
-                                     GPIO_PIN_2));
+    ROM_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
 }

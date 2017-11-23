@@ -55,18 +55,6 @@
 #include "config.h"
 #include "modbus-rtu.h"
 //*****************************************************************************
-//
-//! \addtogroup example_list
-//! <h1>Timer (timers)</h1>
-//!
-//! This example application demonstrates the use of the timers to generate
-//! periodic interrupts.  One timer is set up to interrupt once per second and
-//! the other to interrupt twice per second; each interrupt handler will toggle
-//! its own indicator throught the UART.
-//!
-//! UART0, connected to the Virtual Serial Port and running at 115,200, 8-N-1,
-//! is used to display messages from this application.
-//
 //*****************************************************************************
 
 //****************************************************************************
@@ -297,18 +285,6 @@ void main(void)
 // System Interupt Handler
 //
 //*****************************************************************************
-
-//*****************************************************************************
-//
-// The error routine that is called if the driver library encounters an error.
-//
-//*****************************************************************************
-#ifdef DEBUG
-void
-__error__(char *pcFilename, uint32_t ui32Line)
-{
-}
-#endif
 
 void PORTJIntHandler(void) {
 	uint32_t PortFmask = GPIOIntStatus(GPIO_PORTJ_BASE,
@@ -770,18 +746,6 @@ void PORTHIntHandler(void) {
 //    //
 //    ROM_TimerIntClear(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
 //}
-//*****************************************************************************
-//
-// The interrupt handler for the second timer interrupt.
-//
-//*****************************************************************************
-void Timer5IntHandler(void) {
-
-	//
-	// Clear the timer interrupt.
-	//
-	ROM_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
-}
 
 // Vector Rx/Tx UART0 from PC
 void UART0IntHandler(void) {

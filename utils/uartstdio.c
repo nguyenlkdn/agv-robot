@@ -1291,6 +1291,7 @@ convert:
 void
 UARTprintf(const char *pcString, ...)
 {
+#ifdef DEBUG
     va_list vaArgP;
 
     //
@@ -1304,6 +1305,9 @@ UARTprintf(const char *pcString, ...)
     // We're finished with the varargs now.
     //
     va_end(vaArgP);
+#else
+    return;
+#endif
 }
 
 //*****************************************************************************
