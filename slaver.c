@@ -141,6 +141,7 @@ uint32_t adcvalue[12];
 void main(void)
 
 {
+    static int STATE=0;
 	init();
 	ROM_IntMasterDisable();
 	if (STATE == 0) {

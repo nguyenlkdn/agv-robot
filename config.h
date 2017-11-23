@@ -75,7 +75,6 @@ extern uint16_t ROBOTTX_Buffer[ROBTO_RX_MAX_SIZE];
  */
 
 extern uint16_t numofStation;
-static uint8_t STATE;
 extern uint32_t robotmax;
 extern uint32_t stationmax;
 extern uint8_t lcdinit;

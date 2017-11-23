@@ -61,7 +61,7 @@ MMU MMUnit;
 //*****************************************************************************
 void init(void){
     cfg_clock();
-    cfg_wdt();
+    //cfg_wdt();
     SysCtlDelay(g_ui32SysClock/10);
     cfg_peripheral();
     cfg_inout();
