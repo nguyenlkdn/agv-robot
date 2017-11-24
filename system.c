@@ -26,6 +26,7 @@
 #include "utils/uartstdio.h"
 #include "driverlib/pwm.h"
 #include "driverlib/udma.h"
+#include "driverlib/flash.h"
 #include "utils/cpu_usage.h"
 #include "config.h"
 //*****************************************************************************
@@ -61,7 +62,7 @@ MMU MMUnit;
 //*****************************************************************************
 void init(void){
     cfg_clock();
-    //cfg_wdt();
+    cfg_wdt();
     SysCtlDelay(g_ui32SysClock/10);
     cfg_peripheral();
     cfg_inout();
@@ -74,7 +75,7 @@ void init(void){
     //
     // Initialize the CPU usage measurement routine.
     //
-    //CPUUsageInit(g_ui32SysClock, SYSTICKS_PER_SECOND, 2);
+    CPUUsageInit(g_ui32SysClock, SYSTICKS_PER_SECOND, 2);
     //ROM_FPULazyStackingEnable();
     UARTprintf("System Was Initialized !!!\n");
 }
@@ -158,7 +159,6 @@ void cfg_wdt(void)
     // Enable the peripherals used by this example.
     //
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_WDOG0);
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOG);
     //
     // Enable the watchdog interrupt.
     //
@@ -172,16 +172,17 @@ void cfg_wdt(void)
     //
     // Enable reset generation from the watchdog timer.
     //
-    ROM_WatchdogResetEnable(WATCHDOG0_BASE);
+    //ROM_WatchdogResetEnable(WATCHDOG0_BASE);
 
     //
     // Enable the watchdog timer.
     //
-
+    g_bFeedWatchdog=0;
+    ROM_WatchdogEnable(WATCHDOG0_BASE);
 }
 void* MemoryAllocation(void *fp, uint32_t size)
 {
-    g_bFeedWatchdog = false;
+    g_bFeedWatchdog = 1;
     if(fp == NULL)
     {
 
@@ -198,7 +199,7 @@ void* MemoryAllocation(void *fp, uint32_t size)
     if(fp == NULL)
     {
         UARTprintf("[ERROR] Cannot allocate memory: %d", size);
-        g_bFeedWatchdog = true;
+        g_bFeedWatchdog = 0;
         return NULL;
     }
     else
@@ -210,13 +211,13 @@ void* MemoryAllocation(void *fp, uint32_t size)
 #ifdef MEMORY_DEBUG
         UARTprintf("[SUCESS] Recorded: %x\n", MMUnit.mm[MMUnit.idex]);
 #endif
-        g_bFeedWatchdog = true;
+        g_bFeedWatchdog = 0;
         return fp;
     }
 
 }
 void cfg_pwm(void){
-    g_bFeedWatchdog = false;
+    g_bFeedWatchdog = 1;
     // Wait for the PWM0 module to be ready.
     //
     GPIOPinConfigure(GPIO_PG0_M0PWM4);
@@ -339,6 +340,7 @@ void cfg_pwm(void){
     //         PWM_OUT_0_BIT | PWM_OUT_1_BIT | PWM_OUT_2_BIT | PWM_OUT_3_BIT
     //                 | PWM_OUT_4_BIT | PWM_OUT_5_BIT | PWM_OUT_6_BIT
     //                 | PWM_OUT_7_BIT, true);
+    g_bFeedWatchdog = 0;
 }
 void cfg_interrupt(void){
 //  GPIOIntEnable(GPIO_PORTC_BASE, GPIO_PIN_5);
@@ -756,9 +758,15 @@ WatchdogIntHandler(void)
     // without clearing the interrupt.  This will cause the system to reset
     // next time the watchdog interrupt fires.
     //
-    if(!g_bFeedWatchdog)
+    if(g_bFeedWatchdog == 0)
     {
+        UARTprintf("No need to restart MCU!\n");
+        ROM_WatchdogReloadSet(WATCHDOG0_BASE, g_ui32SysClock);
         return;
+    }
+    else
+    {
+        UARTprintf("Try to restart MCU\n");
     }
 
     //
@@ -773,10 +781,24 @@ WatchdogIntHandler(void)
 // The interrupt handler for the second timer interrupt.
 //
 //*****************************************************************************
+#define HW_REV_FLASH_ADRESS 0x60000
 void Timer5IntHandler(void) {
 
     //
     // Clear the timer interrupt.
     //
     ROM_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+}
+static uint8_t hwRevWrCmd(void)
+{
+    uint8_t hwRev[5] = "1.0.0"; // Write your HW revision
+    FlashErase(HW_REV_FLASH_ADRESS);
+
+    FlashProgram((uint32_t*) hwRev, HW_REV_FLASH_ADRESS, 4);
+
+    FlashProtectSet(HW_REV_FLASH_ADRESS, FlashReadWrite);
+
+    FlashUserSave();
+
+    return 0;
 }

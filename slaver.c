@@ -29,6 +29,7 @@
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
+#include "inc/hw_flash.h"
 #include "driverlib/debug.h"
 #include "driverlib/fpu.h"
 #include "driverlib/gpio.h"
@@ -41,6 +42,7 @@
 #include "driverlib/uart.h"
 #include "driverlib/pwm.h"
 #include "driverlib/adc.h"
+#include "driverlib/flash.h"
 #include "driverlib/systick.h"
 #include "utils/uartstdio.h"
 
@@ -141,19 +143,28 @@ uint32_t adcvalue[12];
 void main(void)
 
 {
-    static int STATE=0;
+    uint32_t storaged = *(uint8_t *)FLASH_FMPRE0;
 	init();
 	ROM_IntMasterDisable();
-	if (STATE == 0) {
+	if (0 == 0) {
+        GLCD_Initalize();
 		MotorInit();
 		GPDSensorInit();
 		LineSensorInit();
 		rfidInit();
 		zigbeeInit(1, UART3_BASE);
 		ADCInit();
-		GLCD_Initalize();
-		STATE = 1;
+//		HWREG(FLASH_FMA) = FLASH_FMPRE0; // Program Address to write
+//
+//		HWREG(FLASH_FMD) = 1; // Program Data to write
+//
+//		HWREG(FLASH_FMC) = (FLASH_FMC_WRKEY|FLASH_FMC_WRITE); // Start write to flash
+//
+//		while((HWREG(FLASH_FCRIS) & FLASH_FCRIS_PRIS) != FLASH_FCRIS_PRIS); // Wait for operation to complete
+//
+//		HWREG(FLASH_FCRIS) = FLASH_FCRIS_PRIS; // clear the completion flag for the next iteration
 	}
+	//printf("data: %d\n", storaged);
 	ROM_IntMasterEnable();
 
 	//

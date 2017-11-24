@@ -299,7 +299,7 @@ void GLCD_Define_Character(int charCode, int * defChar)
 void GLCD_Initalize(void)
 {
     UARTprintf("Initializing GLCD\n");
-    //g_bFeedWatchdog = false;
+    g_bFeedWatchdog = 0;
     ROM_GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE, 0xFF);
     ROM_GPIOPinTypeGPIOOutput(GPIO_PORTK_BASE, T6963_WR | T6963_RD | T6963_CE | T6963_CD | T6963_FS | T6963_RESET);
     ROM_GPIOPinWrite(GPIO_PORTK_BASE, T6963_WR | T6963_RD | T6963_CE | T6963_CD | T6963_FS | T6963_RESET, 0x00);
