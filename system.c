@@ -413,8 +413,8 @@ void cfg_inout(void) {
 
       GPIOIntEnable(GPIO_PORTJ_BASE, GPIO_PIN_0 );
       GPIOIntTypeSet(GPIO_PORTJ_BASE, GPIO_PIN_0 , GPIO_BOTH_EDGES  );
-      IntEnable(INT_GPIOJ);
-      GPIOIntClear(GPIO_PORTJ_BASE, GPIO_PIN_0 );
+      //IntEnable(INT_GPIOJ);
+      //GPIOIntClear(GPIO_PORTJ_BASE, GPIO_PIN_0 );
       // // Resistor Pull up for PORTA.2 & PORTF.3 with 8mA
      // GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_2 | GPIO_PIN_3,
 
