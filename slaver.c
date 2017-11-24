@@ -165,7 +165,7 @@ void main(void)
 	}
 	//printf("data: %d\n", storaged);
 	ROM_IntMasterEnable();
-
+	ROM_WatchdogEnable(WATCHDOG0_BASE);
 	//
 	// Enable processor interrupts.
 	//

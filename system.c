@@ -172,7 +172,7 @@ void cfg_wdt(void)
     //
     // Enable reset generation from the watchdog timer.
     //
-    //ROM_WatchdogResetEnable(WATCHDOG0_BASE);
+    ROM_WatchdogResetEnable(WATCHDOG0_BASE);
 
     //
     // Enable the watchdog timer.
@@ -420,9 +420,6 @@ void cfg_inout(void) {
       // // Resistor Pull up for PORTA.2 & PORTF.3 with 8mA
      // GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_2 | GPIO_PIN_3,
 
-
-
-
 }
 void cfg_uart(void){
     g_bFeedWatchdog = false;
@@ -520,6 +517,14 @@ void cfg_timer(void){
     ROM_IntEnable(INT_TIMER4A);
     ROM_TimerIntEnable(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
     //ROM_TimerEnable(TIMER4_BASE, TIMER_A);
+
+    // Timer 5
+    TimerClockSourceSet(TIMER5_BASE, TIMER_CLOCK_PIOSC);
+    ROM_TimerConfigure(TIMER5_BASE, TIMER_CFG_PERIODIC);
+    ROM_TimerLoadSet(TIMER5_BASE, TIMER_A, g_ui32SysClock/4);
+    ROM_IntEnable(INT_TIMER5A);
+    ROM_TimerIntEnable(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+    ROM_TimerEnable(TIMER5_BASE, TIMER_A);
     g_bFeedWatchdog = true;
 }
 void cfg_systick(void){
@@ -760,15 +765,7 @@ WatchdogIntHandler(void)
     //
     if(g_bFeedWatchdog == 0)
     {
-        UARTprintf("No need to restart MCU!\n");
-        ROM_WatchdogReloadSet(WATCHDOG0_BASE, g_ui32SysClock);
-        return;
     }
-    else
-    {
-        UARTprintf("Try to restart MCU\n");
-    }
-
     //
     // Clear the watchdog interrupt.
     //
@@ -781,24 +778,24 @@ WatchdogIntHandler(void)
 // The interrupt handler for the second timer interrupt.
 //
 //*****************************************************************************
-#define HW_REV_FLASH_ADRESS 0x60000
 void Timer5IntHandler(void) {
 
     //
     // Clear the timer interrupt.
     //
     ROM_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+    ROM_WatchdogReloadSet(WATCHDOG0_BASE, g_ui32SysClock);
 }
-static uint8_t hwRevWrCmd(void)
-{
-    uint8_t hwRev[5] = "1.0.0"; // Write your HW revision
-    FlashErase(HW_REV_FLASH_ADRESS);
-
-    FlashProgram((uint32_t*) hwRev, HW_REV_FLASH_ADRESS, 4);
-
-    FlashProtectSet(HW_REV_FLASH_ADRESS, FlashReadWrite);
-
-    FlashUserSave();
-
-    return 0;
-}
+//static uint8_t hwRevWrCmd(void)
+//{
+//    uint8_t hwRev[5] = "1.0.0"; // Write your HW revision
+//    FlashErase(HW_REV_FLASH_ADRESS);
+//
+//    FlashProgram((uint32_t*) hwRev, HW_REV_FLASH_ADRESS, 4);
+//
+//    FlashProtectSet(HW_REV_FLASH_ADRESS, FlashReadWrite);
+//
+//    FlashUserSave();
+//
+//    return 0;
+//}
