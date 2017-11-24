@@ -98,7 +98,7 @@ void cfg_dma(void)
     //
     ROM_uDMAControlBaseSet(pui8ControlTable);
 
-    ROM_IntEnable(INT_UDMA);
+    //ROM_IntEnable(INT_UDMA);
     //
     // Fill the source memory buffer with a simple incrementing pattern.
     //
@@ -115,10 +115,10 @@ void cfg_dma(void)
     // Put the attributes in a known state for the uDMA software channel.
     // These should already be disabled by default.
     //
-    ROM_uDMAChannelAttributeDisable(UDMA_CHANNEL_SW,
-                                    UDMA_ATTR_USEBURST | UDMA_ATTR_ALTSELECT |
-                                    (UDMA_ATTR_HIGH_PRIORITY |
-                                    UDMA_ATTR_REQMASK));
+//    ROM_uDMAChannelAttributeDisable(UDMA_CHANNEL_SW,
+//                                    UDMA_ATTR_USEBURST | UDMA_ATTR_ALTSELECT |
+//                                    (UDMA_ATTR_HIGH_PRIORITY |
+//                                    UDMA_ATTR_REQMASK));
 
     //
     // Configure the control parameters for the SW channel.  The SW channel
@@ -130,18 +130,18 @@ void cfg_dma(void)
     // once the transfer is started, and allows other channels cycles if they
     // are higher priority.
     //
-    ROM_uDMAChannelControlSet(UDMA_CHANNEL_SW | UDMA_PRI_SELECT,
-                              UDMA_SIZE_32 | UDMA_SRC_INC_32 | UDMA_DST_INC_32 |
-                              UDMA_ARB_8);
+//    ROM_uDMAChannelControlSet(UDMA_CHANNEL_SW | UDMA_PRI_SELECT,
+//                              UDMA_SIZE_32 | UDMA_SRC_INC_32 | UDMA_DST_INC_32 |
+//                              UDMA_ARB_8);
 
     //
     // Set up the transfer parameters for the software channel.  This will
     // configure the transfer buffers and the transfer size.  Auto mode must be
     // used for software transfers.
     //
-    ROM_uDMAChannelTransferSet(UDMA_CHANNEL_SW | UDMA_PRI_SELECT,
-                               UDMA_MODE_AUTO, g_ui32SrcBuf, g_ui32DstBuf,
-                               MEM_BUFFER_SIZE);
+//    ROM_uDMAChannelTransferSet(UDMA_CHANNEL_SW | UDMA_PRI_SELECT,
+//                               UDMA_MODE_AUTO, g_ui32SrcBuf, g_ui32DstBuf,
+//                               MEM_BUFFER_SIZE);
 
     //
     // Now the software channel is primed to start a transfer.  The channel
@@ -429,7 +429,7 @@ void cfg_uart(void){
     ROM_GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
     UARTClockSourceSet(UART0_BASE, UART_CLOCK_SYSTEM);
     UARTStdioConfig(0, 115200, g_ui32SysClock);
-    UARTFIFODisable(UART0_BASE);
+    //UARTFIFODisable(UART0_BASE);
 #ifdef DEBUG
     UARTIntEnable(UART0_BASE, UART_INT_RX);
     IntEnable(INT_UART0);
@@ -526,7 +526,7 @@ void cfg_timer(void){
     ROM_TimerLoadSet(TIMER5_BASE, TIMER_A, g_ui32SysClock/4);
     ROM_IntEnable(INT_TIMER5A);
     ROM_TimerIntEnable(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
-    ROM_TimerEnable(TIMER5_BASE, TIMER_A);
+    //ROM_TimerEnable(TIMER5_BASE, TIMER_A);
     g_bFeedWatchdog = true;
 }
 void cfg_systick(void){
@@ -718,6 +718,7 @@ void
 SysTickHandler(void)
 {
     static uint32_t ui32TickCount = 0;
+    ROM_WatchdogReloadSet(WATCHDOG0_BASE, g_ui32SysClock);
 
     //
     // Increment the tick counter.
@@ -786,7 +787,7 @@ void Timer5IntHandler(void) {
     // Clear the timer interrupt.
     //
     ROM_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
-    ROM_WatchdogReloadSet(WATCHDOG0_BASE, g_ui32SysClock);
+//    ROM_WatchdogReloadSet(WATCHDOG0_BASE, g_ui32SysClock);
 }
 //static uint8_t hwRevWrCmd(void)
 //{
