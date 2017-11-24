@@ -63,7 +63,7 @@ MMU MMUnit;
 void init(void){
     cfg_clock();
     cfg_wdt();
-    SysCtlDelay(g_ui32SysClock/10);
+    SysCtlDelay(g_ui32SysClock/1000);
     cfg_peripheral();
     cfg_inout();
     cfg_uart();
@@ -172,7 +172,7 @@ void cfg_wdt(void)
     //
     // Enable reset generation from the watchdog timer.
     //
-    ROM_WatchdogResetEnable(WATCHDOG0_BASE);
+    //ROM_WatchdogResetEnable(WATCHDOG0_BASE);
 
     //
     // Enable the watchdog timer.
@@ -430,6 +430,7 @@ void cfg_uart(void){
     UARTClockSourceSet(UART0_BASE, UART_CLOCK_SYSTEM);
     UARTStdioConfig(0, 115200, g_ui32SysClock);
     UARTFIFODisable(UART0_BASE);
+#ifdef DEBUG
     UARTIntEnable(UART0_BASE, UART_INT_RX);
     IntEnable(INT_UART0);
     //
@@ -442,6 +443,7 @@ void cfg_uart(void){
     UARTprintf("\n***        Timer 4 Enable            ***");
     UARTprintf("\n***        Timer 5 Enable            ***");
     UARTprintf("\n****************************************\n");
+#endif
     g_bFeedWatchdog = true;
 }
 void cfg_peripheral(void){

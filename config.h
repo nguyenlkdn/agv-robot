@@ -30,7 +30,7 @@
 //#define MODBUS_DEBUG
 //#define ZIGBEE_DEBUG
 //#define RFID_DEBUG
-#define DEBUG
+//#define DEBUG
 
 #define MOSBUS_TIMEOUT           (g_ui32SysClock/50)
 #define MODBUS_RESEND            (MOSBUS_TIMEOUT/2)

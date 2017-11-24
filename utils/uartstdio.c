@@ -36,7 +36,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
-
+#include "../config.h"
 //*****************************************************************************
 //
 //! \addtogroup uartstdio_api
@@ -1288,7 +1288,6 @@ convert:
 //! \return None.
 //
 //*****************************************************************************
-//#define DEBUG
 void
 UARTprintf(const char *pcString, ...)
 {
