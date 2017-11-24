@@ -177,7 +177,7 @@ void main(void)
 	SysCtlDelay(g_ui32SysClock / 1000);
 
 	GLCDPrintfNormal(0, 0, "  -----  ROBOTIC AGV -----");
-	GLCDPrintfNormal(0, 3, "Err : 0              ");
+	//GLCDPrintfNormal(0, 3, "Err : 0              ");
 //      GLCDPrintfNormal(0, 2, "Batery: %d (volt)  ", adcvalue / 124);
 
 	// Loop forever while the timers run.

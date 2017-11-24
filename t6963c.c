@@ -384,22 +384,22 @@ void GLCD_Initalize(void)
         GLCD_Clear_Graphic();
         GLCD_Text_GoTo(0,0);
         GLCD_Write_String("  Initializing System.... ");
-        SysCtlDelay(g_ui32SysClock/10);
+        //SysCtlDelay(g_ui32SysClock/10);
         GLCD_Text_GoTo(0,1);
         GLCD_Write_String("     > Initialized Motor.... ");
         SysCtlDelay(g_ui32SysClock/10);
 
         GLCD_Text_GoTo(0,2);
         GLCD_Write_String("     > Initialized Zigbee.... ");
-        SysCtlDelay(g_ui32SysClock/10);
+       // SysCtlDelay(g_ui32SysClock/10);
 
         GLCD_Text_GoTo(0,3);
         GLCD_Write_String("     > Initialized RFID.... ");
-        SysCtlDelay(g_ui32SysClock/10);
+       // SysCtlDelay(g_ui32SysClock/10);
 
         GLCD_Text_GoTo(0,4);
         GLCD_Write_String("     > Initialized Modbus.... ");
-        SysCtlDelay(g_ui32SysClock/10);
+       // SysCtlDelay(g_ui32SysClock/10);
 
         GLCD_Clear_Text();
         GLCD_Clear_CG();
