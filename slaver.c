@@ -187,7 +187,7 @@ void main(void)
 	UARTprintf("robot 0k \n");
 	dung = 1;
 	while (1) {
-
+		ROM_IntMasterDisable();
 		//  UARTprintf("Batery %d \n",adcvalue[0]);
 		//  SysCtlDelay(g_ui32SysClock / 10000);
 		//////////////////////////////////////////////////////
@@ -268,6 +268,7 @@ void main(void)
 			ht_tram0 = 0;
 		}
 		//////////////////// nan ha khay //////////////////////////
+		ROM_IntMasterEnable();
 
 		if (tram1 == tram0) {
 			if (nan_ha == 1 && tram0 == 5) {
