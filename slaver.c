@@ -143,7 +143,6 @@ uint32_t adcvalue[12];
 void main(void)
 
 {
-    uint32_t storaged = *(uint8_t *)FLASH_FMPRE0;
 	init();
 	ROM_IntMasterDisable();
 	if (0 == 0) {

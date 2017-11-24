@@ -178,7 +178,7 @@ void cfg_wdt(void)
     // Enable the watchdog timer.
     //
     g_bFeedWatchdog=0;
-    ROM_WatchdogEnable(WATCHDOG0_BASE);
+    //ROM_WatchdogEnable(WATCHDOG0_BASE);
 }
 void* MemoryAllocation(void *fp, uint32_t size)
 {
