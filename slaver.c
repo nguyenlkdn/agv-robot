@@ -196,14 +196,15 @@ void main(void)
 		if (binh == 1) {
 			//GLCDPrintfNormal(5, 1, "RX1: %d, RX2: %d ", ROBOTRX_Buffer[0], ROBOTRX_Buffer[1]);
 			batterypercent = ADCGet(adcvalue);
-			GLCDPrintfNormal(0, 2, "Battery     : %2d (%%) ", batterypercent);
+			GLCDPrintfNormal(0, 3, "Battery     : %2d (%%) ", batterypercent);
 			binh = 0;
 		}
-	    GLCDPrintfNormal(0, 3, "CPU         : %2u (%%)", g_ui32CPUUsage);
+
+        GLCDPrintfNormal(0, 1, "Robot RX Data: %d %d %d %d %d", ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2], ROBOTRX_Buffer[3], ROBOTRX_Buffer[4]);
+        GLCDPrintfNormal(0, 2, "Robot TX Data: %d %d %d %d %d", ROBOTTX_Buffer[0], ROBOTTX_Buffer[1], ROBOTTX_Buffer[2], ROBOTTX_Buffer[3], ROBOTTX_Buffer[4]);
 		///////////////////////////////////////////////////
 		if (loi2 == 0) {
 			if (loi1 != loi) {
-				//GLCDPrintfNormal(0, 3, "Err : %d  ", loi);
 				switch (loi) {
 				case 1:
 					GLCDPrintfNormal(0, 5, "Error       : forewarning 1");
@@ -268,25 +269,38 @@ void main(void)
 		}
 
 		//////////////////// nan ha khay //////////////////////////
+        if (ROBOTRX_Buffer[1] == 1 && nan_ha == 0) {
+            nan_ha = 1;
+            GLCDPrintfNormal(0, 4, "The Carrier INCREASED !!!");
+            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
+            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, 0);
+        }
 
-		if (tram1 == tram0) {
-			if (nan_ha == 1 && tram0 == 5) {
+        if (ROBOTRX_Buffer[1] == 0 && nan_ha == 1) {
+            nan_ha = 0;
+            GLCDPrintfNormal(0, 4, "                         ");
+            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
+            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
+        }
 
-				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
-				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, 0);
-				xuong = 0;
-
-			} else {
-				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
-				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
-
-				xuong = 1;
-			}
-		} else {
-			nan_ha = 0;
-			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
-			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
-		}
+//		if (tram1 == tram0) {
+//			if (nan_ha == 1 && tram0 == 5) {
+//
+//				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
+//				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, 0);
+//				xuong = 0;
+//
+//			} else {
+//				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
+//				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
+//
+//				xuong = 1;
+//			}
+//		} else {
+//			nan_ha = 0;
+//			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
+//			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
+//		}
 		ROM_IntMasterEnable();
 ////////////////////////////////////////////////////////////
 		SysCtlDelay(g_ui32SysClock / 1000);
@@ -555,30 +569,17 @@ void Timer3IntHandler(void) {
 //
 //                 UARTprintf("run\n");
 //             }
-			if (ROBOTRX_Buffer[0] == 7 && tram1 != 1) {
-
-				tram1 = 1;
-				tram0 = 0;
-				dung = 1;
-				ht_tram1 = 1;
-
-				UARTprintf("di tram 1\n");
-
-				UARTprintf("stop\n");
-			}
-			if (ROBOTRX_Buffer[0] == 8 && nan_ha == 0) {
-
-				nan_ha = 1;
-
-				UARTprintf("nan\n");
-			}
-			if (ROBOTRX_Buffer[0] == 9 && nan_ha == 1) {
-
-				nan_ha = 0;
-
-				UARTprintf("nan\n");
-			}
-
+//			if (ROBOTRX_Buffer[0] == 7 && tram1 != 1) {
+//
+//				tram1 = 1;
+//				tram0 = 0;
+//				dung = 1;
+//				ht_tram1 = 1;
+//
+//				UARTprintf("di tram 1\n");
+//
+//				UARTprintf("stop\n");
+//			}
 //             if (ROBOTRX_Buffer[0] == )
 //             {
 //                 //      ROM_TimerDisable(TIMER0_BASE, TIMER_A);
