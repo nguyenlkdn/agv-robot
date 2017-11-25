@@ -250,7 +250,7 @@ void Timer2IntHandler(void)
                                    (void *)(UART2_BASE + UART_O_DR),
                                    g_UART2RX1, sizeof(g_UART2RX1));
         MAP_uDMAChannelEnable(UDMA_CH12_UART2RX);
-        rfid_timeout=0;
+        //rfid_timeout=0;
         /*
          *
          */
@@ -293,7 +293,7 @@ void Timer2IntHandler(void)
                                            (void *)(UART2_BASE + UART_O_DR),
                                            g_UART2RX1, sizeof(g_UART2RX1));
                 MAP_uDMAChannelEnable(UDMA_CH12_UART2RX);
-                rfid_timeout=0;
+                //rfid_timeout=0;
             }
         }
 #ifdef RFID_DEBUG

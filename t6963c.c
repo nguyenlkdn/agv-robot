@@ -303,9 +303,9 @@ void GLCD_Initalize(void)
     ROM_GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE, 0xFF);
     ROM_GPIOPinTypeGPIOOutput(GPIO_PORTK_BASE, T6963_WR | T6963_RD | T6963_CE | T6963_CD | T6963_FS | T6963_RESET);
     ROM_GPIOPinWrite(GPIO_PORTK_BASE, T6963_WR | T6963_RD | T6963_CE | T6963_CD | T6963_FS | T6963_RESET, 0x00);
-    SysCtlDelay(g_ui32SysClock/2);
+    SysCtlDelay(g_ui32SysClock/1000000);
     ROM_GPIOPinWrite(GPIO_PORTK_BASE, T6963_RESET, T6963_RESET);
-    SysCtlDelay(g_ui32SysClock/2);
+    SysCtlDelay(g_ui32SysClock/1000000);
 
     while (1)
     {
@@ -313,7 +313,7 @@ void GLCD_Initalize(void)
         // //Unlock GPIOD7 - Like PF0 its used for NMI - Without this step it doesn't work
         UARTprintf("Try to reset GLCD\n");
         ROM_GPIOPinWrite(GPIO_PORTK_BASE, T6963_RESET, 0x00);
-        SysCtlDelay(g_ui32SysClock);
+        SysCtlDelay(g_ui32SysClock/10000);
         ROM_GPIOPinWrite(GPIO_PORTK_BASE, T6963_RESET, T6963_RESET);
 
 
@@ -387,7 +387,7 @@ void GLCD_Initalize(void)
         //SysCtlDelay(g_ui32SysClock/10);
         GLCD_Text_GoTo(0,1);
         GLCD_Write_String("     > Initialized Motor.... ");
-        SysCtlDelay(g_ui32SysClock/10);
+        //SysCtlDelay(g_ui32SysClock/10);
 
         GLCD_Text_GoTo(0,2);
         GLCD_Write_String("     > Initialized Zigbee.... ");

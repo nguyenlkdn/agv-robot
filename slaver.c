@@ -186,6 +186,7 @@ void main(void)
 	//   MotorController(4000, 4000);
 	UARTprintf("robot 0k \n");
 	dung = 1;
+	int i=0;
 	while (1) {
 
 		//  UARTprintf("Batery %d \n",adcvalue[0]);
@@ -194,6 +195,7 @@ void main(void)
 		if (binh == 1) {
 			GLCDPrintfNormal(5, 1, "%d", ROBOTRX_Buffer[0]);
 			ADCGet(adcvalue);
+			adcvalue[0] = i++;
 			if (adcvalue[0] / 124 < 20) {
 				GLCDPrintfNormal(0, 2, "Batery low : %2d (volt)  ",
 						adcvalue[0] / 124);
