@@ -50,6 +50,7 @@ void ADCInit()
 
 uint32_t ADCGet(uint32_t *adcValues)
 {
+    uint32_t batterypercent = 0;
     ADCProcessorTrigger(ADC0_BASE,0);
     // Wait until the sample sequence has completed.
     uint32_t timeout = g_ui32SysClock/10;
@@ -60,8 +61,33 @@ uint32_t ADCGet(uint32_t *adcValues)
         }
     }
     // Read the value from the ADC.
-
-    return(ADCSequenceDataGet(ADC0_BASE, 0, adcValues));
+    ADCSequenceDataGet(ADC0_BASE, 0, adcValues);
+    batterypercent = adcValues[0]*100/2976;
+    if(batterypercent < 20)
+    {
+        batterypercent = 20;
+    }
+    else if(batterypercent < 30)
+    {
+        batterypercent = 30;
+    }
+    else if(batterypercent < 50)
+    {
+        batterypercent = 50;
+    }
+    else if(batterypercent < 80)
+    {
+        batterypercent = 80;
+    }
+    else if (batterypercent < 90)
+    {
+        batterypercent = 90;
+    }
+    else
+    {
+        batterypercent = 100;
+    }
+    return batterypercent;
 }
 
 

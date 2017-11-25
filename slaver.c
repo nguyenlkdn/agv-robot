@@ -43,7 +43,7 @@
 #include "driverlib/adc.h"
 #include "driverlib/systick.h"
 #include "utils/uartstdio.h"
-
+#include "utils/cpu_usage.h"
 #include "system.h"
 #include "motor.h"
 #include "sensor.h"
@@ -109,7 +109,7 @@ int hienthi = 1;
 int nan_ha = 0;
 int tram0 = 0;
 int tram1 = 0;
-int boqua = 1;
+int boqua = 0;
 int thongbao = 0;
 int32_t time = 0;
 int32_t speed = 10;
@@ -138,6 +138,8 @@ uint16_t data[10];
 int8_t zigbeesentpackage[BUFFER_SIZE];
 uint32_t rfid_location;
 
+uint8_t batteryStatus[3][6] = {"HIGH", "MEDIUM", "LOW"};
+
 /*
  *
  */
@@ -147,6 +149,7 @@ uint32_t rfid_location;
  *
  */
 uint32_t adcvalue[12];
+uint32_t robotstatus=0;
 //////////////reset  khi treo////////////////////////
 //ROM_WatchdogEnable(WATCHDOG0_BASE);
 /////////////////////////////////////////////
@@ -186,59 +189,49 @@ void main(void)
 	//   MotorController(4000, 4000);
 	UARTprintf("robot 0k \n");
 	dung = 1;
-	int i=0;
+	uint32_t batterypercent = 0;
 	while (1) {
-
-		//  UARTprintf("Batery %d \n",adcvalue[0]);
-		//  SysCtlDelay(g_ui32SysClock / 10000);
+	    ROM_IntMasterDisable();
 		//////////////////////////////////////////////////////
 		if (binh == 1) {
-			GLCDPrintfNormal(5, 1, "%d", ROBOTRX_Buffer[0]);
-			ADCGet(adcvalue);
-			adcvalue[0] = i++;
-			if (adcvalue[0] / 124 < 20) {
-				GLCDPrintfNormal(0, 2, "Batery low : %2d (volt)  ",
-						adcvalue[0] / 124);
-
-			} else {
-				GLCDPrintfNormal(0, 2, "Batery high: %2d (volt)  ",
-						adcvalue[0] / 124);        /// 124
-			}
+			//GLCDPrintfNormal(5, 1, "RX1: %d, RX2: %d ", ROBOTRX_Buffer[0], ROBOTRX_Buffer[1]);
+			batterypercent = ADCGet(adcvalue);
+			GLCDPrintfNormal(0, 2, "Battery     : %2d (%%) ", batterypercent);
 			binh = 0;
 		}
+	    GLCDPrintfNormal(0, 3, "CPU         : %2u (%%)", g_ui32CPUUsage);
 		///////////////////////////////////////////////////
 		if (loi2 == 0) {
 			if (loi1 != loi) {
 				//GLCDPrintfNormal(0, 3, "Err : %d  ", loi);
 				switch (loi) {
 				case 1:
-					GLCDPrintfNormal(0, 3, "Err : forewarning 1");
+					GLCDPrintfNormal(0, 5, "Error       : forewarning 1");
 					break;
 
 				case 2:
-					GLCDPrintfNormal(0, 3, "Err : forewarning 2");
+					GLCDPrintfNormal(0, 5, "Error       : forewarning 2");
 					break;
 
 				case 3:
-					GLCDPrintfNormal(0, 3, "Err : forewarning 3");
+					GLCDPrintfNormal(0, 5, "Error       : forewarning 3");
 					break;
 
 				case 4:
-					GLCDPrintfNormal(0, 3, "Err : forewarning 4");
+					GLCDPrintfNormal(0, 5, "Error       : forewarning 4");
 					break;
 
 				case 5:
-					GLCDPrintfNormal(0, 3, "Err : forewarning 5");
+					GLCDPrintfNormal(0, 5, "Error       : forewarning 5");
 					break;
 
 				case 9:
-					GLCDPrintfNormal(0, 3, "Err : accident      ");
+					GLCDPrintfNormal(0, 5, "Error       : accident      ");
 					break;
 
 				case 0:
-					GLCDPrintfNormal(0, 3, "Err : 0            ");
+					GLCDPrintfNormal(0, 5, "Error       : NONE          ");
 					break;
-
 				}
 				loi1 = loi;
 				loi10 = 1;
@@ -252,23 +245,28 @@ void main(void)
 		///////////////////////////////////////////////////
 		if (hienthi == 1) {
 			hienthi = 0;
-
-			if (dung == 1) {
-				GLCDPrintfNormal(0, 4, "Robot : ready   ");
-			} else {
-				GLCDPrintfNormal(0, 4, "Robot :stop   ");
-			}
-
+            if(++robotstatus == 100)
+            {
+                if(dung == 1)
+                {
+                    GLCDPrintfNormal(0, 6, "Robot       : ready   ");
+                }
+                else
+                {
+                    GLCDPrintfNormal(0, 6, "Robot       : stop   ");
+                }
+            }
+            else if(robotstatus == 150)
+            {
+                robotstatus = 0;
+                GLCDPrintfNormal(0, 6, "Robot       :        ");
+            }
 		}
-		if (ht_tram1 == 1) {
-			GLCDPrintfNormal(0, 5, "Requesting Station: %d ", tram1);
+        if (1) {
+			GLCDPrintfNormal(0, 7, "Requesting  : %d => %d ", tram0, tram1);
 			ht_tram1 = 0;
 		}
-		if (ht_tram0 == 1) {
-			GLCDPrintfNormal(0, 6, "Current Station: %d  ", tram0);
 
-			ht_tram0 = 0;
-		}
 		//////////////////// nan ha khay //////////////////////////
 
 		if (tram1 == tram0) {
@@ -289,8 +287,9 @@ void main(void)
 			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
 			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
 		}
+		ROM_IntMasterEnable();
 ////////////////////////////////////////////////////////////
-
+		SysCtlDelay(g_ui32SysClock / 1000);
 	}
 }
 
@@ -299,18 +298,6 @@ void main(void)
 // System Interupt Handler
 //
 //*****************************************************************************
-
-//*****************************************************************************
-//
-// The error routine that is called if the driver library encounters an error.
-//
-//*****************************************************************************
-#ifdef DEBUG
-void
-__error__(char *pcFilename, uint32_t ui32Line)
-{
-}
-#endif
 
 void PORTJIntHandler(void) {
 	uint32_t PortFmask = GPIOIntStatus(GPIO_PORTJ_BASE,
@@ -345,51 +332,61 @@ void PORTJIntHandler(void) {
 void Timer0IntHandler(void) {
 ////////////////////////////////////////////
 
-	if (tram1 == tram0) {
-		stop1();
-	} else {
-		if (boqua == 1) {
-			if (GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_6) == 64) {
-				loi = 1;
-				time = 0;
-			}
-			////////////
-			if (
+    if (tram1 == tram0)
+    {
+        stop1();
+    }
+    else
+    {
+        if (boqua == 1)
+        {
+            if (GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_6) == 64)
+            {
+                loi = 1;
+                time = 0;
+            }
+            ////////////
+            if (
 
-			GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_7) == 128) {
-				loi = 2;
-				time = 0;
-			}
-			if (
+            GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_7) == 128)
+            {
+                loi = 2;
+                time = 0;
+            }
+            if (
 
-			GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_0) == 1) {
-				loi = 3;
-				time = 0;
-			}
-			if (
+            GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_0) == 1)
+            {
+                loi = 3;
+                time = 0;
+            }
+            if (
 
-			GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_3) == 8) {
-				loi = 4;
-				time = 0;
-			}
-			if (
+            GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_3) == 8)
+            {
+                loi = 4;
+                time = 0;
+            }
+            if (
 
-			GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_2) == 4) {
-				loi = 5;
-				time = 0;
-			}
-		}
-		if (GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_1) == 2) {
-			loi = 9;
-			dung = 0;
-			hienthi = 1;
-			time = 0;
-		}
-		dithang();
-	}
-	//////////////////////////////////////////////
+            GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_2) == 4)
+            {
+                loi = 5;
+                time = 0;
+            }
+        }
+        if (GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_1) == 2)
+        {
+            loi = 9;
+            dung = 0;
+            hienthi = 1;
+            time = 0;
+        }
+        dithang();
+    }
+    //////////////////////////////////////////////
 
-	ROM_TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+    ROM_TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
 }
 
@@ -501,15 +498,16 @@ void Timer3IntHandler(void) {
 	ROM_TimerIntClear(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
 	if (1) {
 		if (ROBOTRX_Buffer[0] > 0) {
+		    ROBOTTX_Buffer[1] = ROBOTRX_Buffer[0];
 			ht_tram0 = 1;
 			// UARTprintf("Received location: %d\n", ROBOTRX_Buffer[5]);
-			if (ROBOTRX_Buffer[0] == 6 && tram1 != 4) {
-				tram1 = 4;
-                tram0 = 0;
-                dung = 1;
-				ht_tram1 = 1;
-				UARTprintf("di tram 4\n");
-			}
+//			if (ROBOTRX_Buffer[0] == 6 && tram1 != 4) {
+//				tram1 = 4;
+//                tram0 = 0;
+//                dung = 1;
+//				ht_tram1 = 1;
+//				UARTprintf("di tram 4\n");
+//			}
 
 			if (ROBOTRX_Buffer[0] == 1 && tram1 != 1) {
 				tram1 = 1;
@@ -519,15 +517,13 @@ void Timer3IntHandler(void) {
 				ht_tram1 = 1;
 				UARTprintf("di tram 1\n");
 			}
-//             if (ROBOTRX_Buffer[0] == 2 && tram1 != 2)
-//             {
-//                 tram1 = 2;
-//                 tram0 = 0;
-//
-//                      loi = 0;
-//                 ht_tram1 = 1;
-//                 UARTprintf("di tram 2\n");
-//             }
+             if (ROBOTRX_Buffer[0] == 2 && tram1 != 2)
+             {
+                 tram1 = 2;
+                 tram0 = 0;
+                 ht_tram1 = 1;
+                 UARTprintf("di tram 2\n");
+             }
 			if (ROBOTRX_Buffer[0] == 3 && tram1 != 3) {
 				tram1 = 3;
 				tram0 = 0;

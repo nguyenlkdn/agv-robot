@@ -61,8 +61,8 @@ MMU MMUnit;
 //*****************************************************************************
 void init(void){
     cfg_clock();
+    //SysCtlDelay(g_ui32SysClock/10);
     cfg_wdt();
-    SysCtlDelay(g_ui32SysClock/10);
     cfg_peripheral();
     cfg_inout();
     cfg_uart();
@@ -71,11 +71,12 @@ void init(void){
     cfg_interrupt();
     cfg_systick();
     cfg_dma();
+
     //
     // Initialize the CPU usage measurement routine.
     //
-    //CPUUsageInit(g_ui32SysClock, SYSTICKS_PER_SECOND, 2);
-    //ROM_FPULazyStackingEnable();
+    CPUUsageInit(g_ui32SysClock, SYSTICKS_PER_SECOND, 2);
+    ROM_FPULazyStackingEnable();
     UARTprintf("System Was Initialized !!!\n");
 }
 void cfg_dma(void)
@@ -167,7 +168,7 @@ void cfg_wdt(void)
     //
     // Set the period of the watchdog timer.
     //
-    ROM_WatchdogReloadSet(WATCHDOG0_BASE, g_ui32SysClock*10);
+    ROM_WatchdogReloadSet(WATCHDOG0_BASE, g_ui32SysClock/2);
 
     //
     // Enable reset generation from the watchdog timer.
@@ -177,7 +178,7 @@ void cfg_wdt(void)
     //
     // Enable the watchdog timer.
     //
-
+    ROM_WatchdogEnable(WATCHDOG0_BASE);
 }
 void* MemoryAllocation(void *fp, uint32_t size)
 {
@@ -431,8 +432,8 @@ void cfg_uart(void){
     UARTClockSourceSet(UART0_BASE, UART_CLOCK_SYSTEM);
     UARTStdioConfig(0, 115200, g_ui32SysClock);
     UARTFIFODisable(UART0_BASE);
-    //UARTIntEnable(UART0_BASE, UART_INT_RX);
-    //IntEnable(INT_UART0);
+    UARTIntEnable(UART0_BASE, UART_INT_RX);
+    IntEnable(INT_UART0);
     //
     UARTprintf("\n***Thong Tin He Thong*******************");
     UARTprintf("\n***        CPU Clock %3d (Mhz)       ***", g_ui32SysClock/1000000);
@@ -752,6 +753,7 @@ SysTickHandler(void)
 void
 WatchdogIntHandler(void)
 {
+    UARTprintf("WDTimer handler!\n");
     //
     // If we have been told to stop feeding the watchdog, return immediately
     // without clearing the interrupt.  This will cause the system to reset

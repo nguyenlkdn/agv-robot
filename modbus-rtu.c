@@ -352,6 +352,14 @@ uint8_t modbusarrayProcessing(uint8_t *array, uint8_t length, uint8_t addr)
 #endif
                             respond[6] = getHIGHbyte(crcgen);
                             respond[7] = getLOWbyte(crcgen);
+#ifdef MODBUS_DEBUG
+                            UARTprintf("Respond Data: ");
+                            for(i=0;i<8;i++)
+                            {
+                                UARTprintf("%x ", respond[i]);
+                            }
+                            UARTprintf("\n");
+#endif
                             modbussendstring(UART3_BASE, respond, 8);
                             return 0;
                         }

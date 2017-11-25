@@ -110,11 +110,15 @@ void Timer4IntHandler(void)
         switch (bufferid)
         {
         case 1:
+            ROM_IntMasterDisable();
             modbusarrayProcessing(g_UART3RX1, sizeof(g_UART3RX1), 1);
+            ROM_IntMasterEnable();
             break;
 
         case 2:
+            ROM_IntMasterDisable();
             modbusarrayProcessing(g_UART3RX2, sizeof(g_UART3RX2), 1);
+            ROM_IntMasterEnable();
             break;
         default:
             break;
