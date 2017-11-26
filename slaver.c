@@ -188,110 +188,130 @@ void main(void)
 	dung = 1;
 	while (1) {
 
-		//  UARTprintf("Batery %d \n",adcvalue[0]);
-		//  SysCtlDelay(g_ui32SysClock / 10000);
-		//////////////////////////////////////////////////////
-		if (binh == 1) {
-			GLCDPrintfNormal(5, 1, "%d", ROBOTRX_Buffer[0]);
-			ADCGet(adcvalue);
-			if (adcvalue[0] / 124 < 20) {
-				GLCDPrintfNormal(0, 2, "Batery low : %2d (volt)  ",
-						adcvalue[0] / 124);
+	//	UARTprintf("%d  %d\n",GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_2),GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_3) );
 
-			} else {
-				GLCDPrintfNormal(0, 2, "Batery high: %2d (volt)  ",
-						adcvalue[0] / 124);        /// 124
+		if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_2) == 4) {
+			// UARTprintf("\n run!");
+			SysCtlDelay(g_ui32SysClock / 100);
+			if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_2) == 4) {
+				dung = 1;
+				loi = 0;
+				hienthi = 1;
 			}
-			binh = 0;
 		}
-		///////////////////////////////////////////////////
-		if (loi2 == 0) {
-			if (loi1 != loi) {
-				//GLCDPrintfNormal(0, 3, "Err : %d  ", loi);
-				switch (loi) {
-				case 1:
-					GLCDPrintfNormal(0, 3, "Err : forewarning 1");
-					break;
+		if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_3) == 0)  //8
+				{
+			SysCtlDelay(g_ui32SysClock / 100);
 
-				case 2:
-					GLCDPrintfNormal(0, 3, "Err : forewarning 2");
-					break;
-
-				case 3:
-					GLCDPrintfNormal(0, 3, "Err : forewarning 3");
-					break;
-
-				case 4:
-					GLCDPrintfNormal(0, 3, "Err : forewarning 4");
-					break;
-
-				case 5:
-					GLCDPrintfNormal(0, 3, "Err : forewarning 5");
-					break;
-
-				case 9:
-					GLCDPrintfNormal(0, 3, "Err : accident      ");
-					break;
-
-				case 0:
-					GLCDPrintfNormal(0, 3, "Err : 0            ");
-					break;
-
+			if (GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_3) == 0)
+			    {
+				dung = 0;
+				hienthi = 1;
 				}
-				loi1 = loi;
-				loi10 = 1;
 			}
-		} else {
-			if (loi10 == 1) {
-				GLCDPrintfNormal(0, 3, "Err : no line        ");
-				loi10 = 0;
-			}
-		}
-		///////////////////////////////////////////////////
-		if (hienthi == 1) {
-			hienthi = 0;
 
-			if (dung == 1) {
-				GLCDPrintfNormal(0, 4, "Robot : ready   ");
+			//  UARTprintf("Batery %d \n",adcvalue[0]);
+			//  SysCtlDelay(g_ui32SysClock / 10000);
+			//////////////////////////////////////////////////////
+			if (binh == 1) {
+				GLCDPrintfNormal(5, 1, "%d", ROBOTRX_Buffer[0]);
+				ADCGet(adcvalue);
+				if (adcvalue[0] / 124 < 20) {
+					GLCDPrintfNormal(0, 2, "Batery low : %2d (volt)  ",
+							adcvalue[0] / 124);
+
+				} else {
+					GLCDPrintfNormal(0, 2, "Batery high: %2d (volt)  ",
+							adcvalue[0] / 124);        /// 124
+				}
+				binh = 0;
+			}
+			///////////////////////////////////////////////////
+			if (loi2 == 0) {
+				if (loi1 != loi) {
+					//GLCDPrintfNormal(0, 3, "Err : %d  ", loi);
+					switch (loi) {
+					case 1:
+						GLCDPrintfNormal(0, 3, "Err : forewarning 1");
+						break;
+
+					case 2:
+						GLCDPrintfNormal(0, 3, "Err : forewarning 2");
+						break;
+
+					case 3:
+						GLCDPrintfNormal(0, 3, "Err : forewarning 3");
+						break;
+
+					case 4:
+						GLCDPrintfNormal(0, 3, "Err : forewarning 4");
+						break;
+
+					case 5:
+						GLCDPrintfNormal(0, 3, "Err : forewarning 5");
+						break;
+
+					case 9:
+						GLCDPrintfNormal(0, 3, "Err : accident      ");
+						break;
+
+					case 0:
+						GLCDPrintfNormal(0, 3, "Err : 0            ");
+						break;
+
+					}
+					loi1 = loi;
+					loi10 = 1;
+				}
 			} else {
-				GLCDPrintfNormal(0, 4, "Robot :stop   ");
+				if (loi10 == 1) {
+					GLCDPrintfNormal(0, 3, "Err : no line        ");
+					loi10 = 0;
+					loi1 = 0;
+				}
 			}
+			///////////////////////////////////////////////////
+			if (hienthi == 1) {
+				hienthi = 0;
 
-		}
-		if (ht_tram1 == 1) {
-			GLCDPrintfNormal(0, 5, "Requesting Station: %d ", tram1);
-			ht_tram1 = 0;
-		}
-		if (ht_tram0 == 1) {
-			GLCDPrintfNormal(0, 6, "Current Station: %d  ", tram0);
+				if (dung == 1) {
+					GLCDPrintfNormal(0, 4, "Robot : ready   ");
+				} else {
+					GLCDPrintfNormal(0, 4, "Robot :stop   ");
+				}
 
-			ht_tram0 = 0;
-		}
-		//////////////////// nan ha khay //////////////////////////
+			}
+			if (ht_tram1 == 1) {
+				GLCDPrintfNormal(0, 5, "Requesting Station: %d ", tram1);
+				ht_tram1 = 0;
+			}
+			if (ht_tram0 == 1) {
+				GLCDPrintfNormal(0, 6, "Current Station: %d  ", tram0);
 
-		if (tram1 == tram0) {
-			if (nan_ha == 1 && tram0 == 5) {
+				ht_tram0 = 0;
+			}
+			//////////////////// nan ha khay //////////////////////////
 
-				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
-				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, 0);
-				xuong = 0;
-
+			if (tram1 == tram0) {
+				if (nan_ha == 1 && tram0 == 5) {
+					GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
+					GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, 0);
+					xuong = 0;
+				} else {
+					GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
+					GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
+					xuong = 1;
+				}
 			} else {
+				nan_ha = 0;
 				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
 				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
-
-				xuong = 1;
 			}
-		} else {
-			nan_ha = 0;
-			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
-			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
-		}
 ////////////////////////////////////////////////////////////
 
-	}
-}
+		}
 
+}
 //*****************************************************************************
 //
 // System Interupt Handler
@@ -304,219 +324,222 @@ void main(void)
 //
 //*****************************************************************************
 #ifdef DEBUG
-void
-__error__(char *pcFilename, uint32_t ui32Line)
-{
-}
+	void
+	__error__(char *pcFilename, uint32_t ui32Line)
+	{
+	}
 #endif
 
-void PORTJIntHandler(void) {
-	uint32_t PortFmask = GPIOIntStatus(GPIO_PORTJ_BASE,
-	GPIO_PIN_0 | GPIO_PIN_1);
-	if (di == 1 && loi == 0) {
-		if (PortFmask & GPIO_PIN_0) {
-			/////////////////////////////////////////////////////////////////////////////////////////////
-			UARTprintf("\n test loi");
+	void PORTJIntHandler(void) {
+		uint32_t PortFmask = GPIOIntStatus(GPIO_PORTJ_BASE,
+		GPIO_PIN_0 | GPIO_PIN_1);
+		if (di == 1 && loi == 0) {
+			if (PortFmask & GPIO_PIN_0) {
+				/////////////////////////////////////////////////////////////////////////////////////////////
+				//UARTprintf("\n test loi");
 //        loi = 1;
 //         time = 0;
-			/////////////////////////////////////////////////////////////////////////////////////////////
-			SysCtlDelay(SysCtlClockGet() / 200);
+				/////////////////////////////////////////////////////////////////////////////////////////////
+				SysCtlDelay(SysCtlClockGet() / 200);
+				GPIOIntClear(GPIO_PORTJ_BASE, GPIO_PIN_0);
+			}
+			if (PortFmask & GPIO_PIN_1) {
+				/////////////////////////////////////////////////////////////////////////////////////////////
+				// UARTprintf("\n ha xuong !");
+				/////////////////////////////////////////////////////////////////////////////////////////////
+				SysCtlDelay(SysCtlClockGet() / 200);
+				GPIOIntClear(GPIO_PORTJ_BASE, GPIO_PIN_1);
+			}
+		} else {
 			GPIOIntClear(GPIO_PORTJ_BASE, GPIO_PIN_0);
 		}
-		if (PortFmask & GPIO_PIN_1) {
-			/////////////////////////////////////////////////////////////////////////////////////////////
-			// UARTprintf("\n ha xuong !");
-			/////////////////////////////////////////////////////////////////////////////////////////////
-			SysCtlDelay(SysCtlClockGet() / 200);
-			GPIOIntClear(GPIO_PORTJ_BASE, GPIO_PIN_1);
-		}
-	} else {
-		GPIOIntClear(GPIO_PORTJ_BASE, GPIO_PIN_0);
-	}
 
-}
+	}
 //*****************************************************************************
 //
 // The interrupt handler for the first timer interrupt.
 //
 //*****************************************************************************
-void Timer0IntHandler(void) {
+	void Timer0IntHandler(void) {
 ////////////////////////////////////////////
 
-	if (tram1 == tram0) {
-		stop1();
-	} else {
-		if (boqua == 1) {
-			if (GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_6) == 64) {
-				loi = 1;
-				time = 0;
-			}
-			////////////
-			if (
+		if (tram1 == tram0) {
+			stop1();
+		} else {
+			if (boqua == 1) {
+				if (GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_6) == 64) {
+					loi = 1;
+					time = 0;
+				}
+				////////////
+				if (
 
-			GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_7) == 128) {
-				loi = 2;
-				time = 0;
-			}
-			if (
+				GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_7) == 128) {
+					loi = 2;
+					time = 0;
+				}
+				if (
 
-			GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_0) == 1) {
-				loi = 3;
-				time = 0;
-			}
-			if (
+				GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_0) == 1) {
+					loi = 3;
+					time = 0;
+				}
+				if (
 
-			GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_3) == 8) {
-				loi = 4;
-				time = 0;
-			}
-			if (
+				GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_3) == 8) {
+					loi = 4;
+					time = 0;
+				}
+				if (
 
-			GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_2) == 4) {
-				loi = 5;
+				GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_2) == 4) {
+					loi = 5;
+					time = 0;
+				}
+			}
+			if (GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_1) == 2) {
+				loi = 9;
+				dung = 0;
+				hienthi = 1;
 				time = 0;
 			}
+			dithang();
 		}
-		if (GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_1) == 2) {
-			loi = 9;
-			dung = 0;
-			hienthi = 1;
-			time = 0;
-		}
-		dithang();
+		//////////////////////////////////////////////
+
+		ROM_TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+
 	}
-	//////////////////////////////////////////////
-
-	ROM_TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
-
-}
 
 //*****************************************************************************
 //
 // The interrupt handler for the second timer interrupt.
 //
 //*****************************************************************************
-void Timer1IntHandler(void) {
-	//ADCGet(&adcvalue);
-	//
-	// Clear the timer interrupt.  ///////7170BC2 // F3E0BA2
+	void Timer1IntHandler(void) {
+		//ADCGet(&adcvalue);
+		//
+		// Clear the timer interrupt.  ///////7170BC2 // F3E0BA2
 
-	/////0DA9BB2 // EB88975
+		/////0DA9BB2 // EB88975
 
-	//
-	//UARTprintf("Timer1IntHandler \n");
-	if (RFID_ID[0] == ':') {
-		binh = 1;
-		//   UARTprintf("RFID ID%s\n", RFID_ID);
-		if (strcmp(RFID_ID, ":1507A88") == 0) {
-			UARTprintf("da toi tram 1\n");
-			ROBOTTX_Buffer[0] = 1;
-			tram0 = 1;
-			ht_tram0 = 1;
+		//
+		//UARTprintf("Timer1IntHandler \n");
+		if (RFID_ID[0] == ':') {
+			binh = 1;
+			//UARTprintf("RFID ID%s\n", RFID_ID);
+			if (strcmp(RFID_ID, ":1507A88") == 0) {
+			//	UARTprintf("da toi tram 1\n");
+				ROBOTTX_Buffer[0] = 1;
+				tram0 = 1;
+				ht_tram0 = 1;
 
-		} else if (strcmp(RFID_ID, ":C4D1060") == 0) {
-			UARTprintf("da toi tram 2\n");
-			ROBOTTX_Buffer[0] = 2;
-			tram0 = 2;
-			ht_tram0 = 1;
+			} else if (strcmp(RFID_ID, ":C4D1060") == 0) {
+			//	UARTprintf("da toi tram 2\n");
+				ROBOTTX_Buffer[0] = 2;
+				tram0 = 2;
+				ht_tram0 = 1;
 
-		} else if (strcmp(RFID_ID, ":C41EBE0") == 0) {
-			UARTprintf("da toi tram 3\n");
-			tram0 = 3;
-			ht_tram0 = 1;
-			ROBOTTX_Buffer[0] = 3;
+			} else if (strcmp(RFID_ID, ":C41EBE0") == 0) {
+				//UARTprintf("da toi tram 3\n");
+				tram0 = 3;
+				ht_tram0 = 1;
+				ROBOTTX_Buffer[0] = 3;
 
-		} else if (strcmp(RFID_ID, ":C42A510") == 0) {
-			UARTprintf("da toi tram 4\n");
-			ROBOTTX_Buffer[0] = 4;
-			tram0 = 4;
-			ht_tram0 = 1;
-		} else if (strcmp(RFID_ID, ":C476220") == 0) {
-			ROBOTTX_Buffer[0] = 5;
-			ht_tram0 = 1;
-			UARTprintf("da toi tram 5\n");
-			tram0 = 5;
-		} else if (strcmp(RFID_ID, ":7170BC2") == 0 || strcmp(RFID_ID, ":F3E0BA2") == 0) {
-			bientantoc = 4000;
-			boqua = 0;
+			} else if (strcmp(RFID_ID, ":C42A510") == 0) {
+			//	UARTprintf("da toi tram 4\n");
+				ROBOTTX_Buffer[0] = 4;
+				tram0 = 4;
+				ht_tram0 = 1;
+			} else if (strcmp(RFID_ID, ":C476220") == 0) {
+				ROBOTTX_Buffer[0] = 5;
+				ht_tram0 = 1;
+				//UARTprintf("da toi tram 5\n");
+				tram0 = 5;
+			} else if (strcmp(RFID_ID, ":7170BC2") == 0
+					|| strcmp(RFID_ID, ":F3E0BA2") == 0
+					|| strcmp(RFID_ID, ":EB84BB2") == 0) {
+				bientantoc = 4000;
+				boqua = 0;
 
-		} else if ( strcmp(RFID_ID, ":0DA9BB2") == 0 ||strcmp(RFID_ID, ":EB88975") == 0 ) {
-			bientantoc = 10000;
-			boqua = 1;
+			} else if (strcmp(RFID_ID, ":0DA9BB2") == 0
+					|| strcmp(RFID_ID, ":EB88975") == 0) {
+				bientantoc = 10000;
+				boqua = 1;
 
-		}
+			}
 //////////////////////////////////////////////////////////////////////
-		else if (strcmp(RFID_ID, ":D395925") == 0
-				//|| strcmp(RFID_ID, ":EB88975") == 0
-				|| strcmp(RFID_ID, ":38C3BB2") == 0
-				|| strcmp(RFID_ID, ":28AAB02") == 0
-				|| strcmp(RFID_ID, ":FB1D935") == 0
+			else if (strcmp(RFID_ID, ":D395925") == 0
+					//|| strcmp(RFID_ID, ":EB88975") == 0
+					|| strcmp(RFID_ID, ":38C3BB2") == 0
+					|| strcmp(RFID_ID, ":28AAB02") == 0
+					|| strcmp(RFID_ID, ":FB1D935") == 0
 
-				|| strcmp(RFID_ID, ":B40D935") == 0
-				|| strcmp(RFID_ID, ":50E7925") == 0
-				|| strcmp(RFID_ID, ":5CC2925") == 0
-				|| strcmp(RFID_ID, ":5070925") == 0)    //1
-						{
-			UARTprintf("tang toc \n");
-			bientantoc = 10000;
-		}
-		/////  ////////////               giam toc /////////////////////////
-		else if (strcmp(RFID_ID, ":5D99925") == 0
-				|| strcmp(RFID_ID, ":F636925") == 0
-				|| strcmp(RFID_ID, ":65EB925") == 0
-				|| strcmp(RFID_ID, ":62C4BA2") == 0
-				|| strcmp(RFID_ID, ":EB84BB2") == 0
-				|| strcmp(RFID_ID, ":EFAABB2") == 0
-			//	|| strcmp(RFID_ID, ":F3E0BA2") == 0
-				|| strcmp(RFID_ID, ":1BC7BB2") == 0
+					|| strcmp(RFID_ID, ":B40D935") == 0
+					|| strcmp(RFID_ID, ":50E7925") == 0
+					|| strcmp(RFID_ID, ":5CC2925") == 0
+					|| strcmp(RFID_ID, ":5070925") == 0)    //1
+							{
+				//UARTprintf("tang toc \n");
+				bientantoc = 10000;
+			}
+			/////  ////////////               giam toc /////////////////////////
+			else if (strcmp(RFID_ID, ":5D99925") == 0
+					|| strcmp(RFID_ID, ":F636925") == 0
+					|| strcmp(RFID_ID, ":65EB925") == 0
+					|| strcmp(RFID_ID, ":62C4BA2") == 0
+					//|| strcmp(RFID_ID, ":EB84BB2") == 0
+					|| strcmp(RFID_ID, ":EFAABB2") == 0
+					//	|| strcmp(RFID_ID, ":F3E0BA2") == 0
+					|| strcmp(RFID_ID, ":1BC7BB2") == 0
 
-				|| strcmp(RFID_ID, ":4DEBBB2") == 0)    //1
-						{
-			UARTprintf("giam toc \n");
-			bientantoc = 4000;
-		}
+					|| strcmp(RFID_ID, ":4DEBBB2") == 0)    //1
+							{
+			//	UARTprintf("giam toc \n");
+				bientantoc = 4000;
+			}
 
 //////////////////////////////////////////////////////////////////////
-		else {
-			UARTprintf("ERROR: Unknown RFID %s ????\n", RFID_ID);
-		}
-		RFID_ID[0] = 0;
+			else {
+				//UARTprintf("ERROR: Unknown RFID %s ????\n", RFID_ID);
+			}
+			RFID_ID[0] = 0;
 
+		}
+		rfid_location = tram0;
+		ROM_TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
 	}
-	rfid_location = tram0;
-	ROM_TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
-}
 
 //*****************************************************************************
 //
 // The interrupt handler for the second timer interrupt.
 //
 //*****************************************************************************
-void Timer3IntHandler(void) {
-	//
-	// Clear the timer interrupt.
-	//
-	ROM_TimerIntClear(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
-	if (1) {
-		if (ROBOTRX_Buffer[0] > 0) {
-			ht_tram0 = 1;
-			// UARTprintf("Received location: %d\n", ROBOTRX_Buffer[5]);
-			if (ROBOTRX_Buffer[0] == 6 && tram1 != 4) {
-				tram1 = 4;
-                tram0 = 0;
-                dung = 1;
-				ht_tram1 = 1;
-				UARTprintf("di tram 4\n");
-			}
+	void Timer3IntHandler(void) {
+		//
+		// Clear the timer interrupt.
+		//
+		ROM_TimerIntClear(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
+		if (1) {
+			if (ROBOTRX_Buffer[0] > 0) {
+				ht_tram0 = 1;
+				// UARTprintf("Received location: %d\n", ROBOTRX_Buffer[5]);
+				if (ROBOTRX_Buffer[0] == 6 && tram1 != 4) {
+					tram1 = 4;
+					tram0 = 0;
+					dung = 1;
+					ht_tram1 = 1;
+					//UARTprintf("di tram 4\n");
+				}
 
-			if (ROBOTRX_Buffer[0] == 1 && tram1 != 1) {
-				tram1 = 1;
-				tram0 = 0;
-				dung = 1;
+				if (ROBOTRX_Buffer[0] == 1 && tram1 != 1) {
+					tram1 = 1;
+					tram0 = 0;
+					dung = 1;
 
-				ht_tram1 = 1;
-				UARTprintf("di tram 1\n");
-			}
+					ht_tram1 = 1;
+					//UARTprintf("di tram 1\n");
+				}
 //             if (ROBOTRX_Buffer[0] == 2 && tram1 != 2)
 //             {
 //                 tram1 = 2;
@@ -526,28 +549,30 @@ void Timer3IntHandler(void) {
 //                 ht_tram1 = 1;
 //                 UARTprintf("di tram 2\n");
 //             }
-			if (ROBOTRX_Buffer[0] == 3 && tram1 != 3) {
-				tram1 = 3;
-				tram0 = 0;
-				dung = 1;
-				loi = 0;
-				ht_tram1 = 1;
-				UARTprintf("di tram 3\n");
-			}
-			if (ROBOTRX_Buffer[0] == 4 && tram1 != 4) {
-				tram1 = 4;
-				tram0 = 0;
-				ht_tram1 = 1;
-				UARTprintf("di tram 4\n");
-			}
-			if (ROBOTRX_Buffer[0] == 5 && tram1 != 5) {
-				tram1 = 5;
-				tram0 = 0;
-				dung = 1;
-				loi = 0;
-				ht_tram1 = 1;
-				UARTprintf("di tram 5\n");
-			}
+				if (ROBOTRX_Buffer[0] == 3 && tram1 != 3) {
+					tram1 = 3;
+					tram0 = 0;
+					dung = 1;
+					loi = 0;
+					ht_tram1 = 1;
+					hienthi = 0;
+					//	UARTprintf("di tram 3\n");
+				}
+				if (ROBOTRX_Buffer[0] == 4 && tram1 != 4) {
+					tram1 = 4;
+					tram0 = 0;
+					ht_tram1 = 1;
+					//	UARTprintf("di tram 4\n");
+				}
+				if (ROBOTRX_Buffer[0] == 5 && tram1 != 5) {
+					tram1 = 5;
+					tram0 = 0;
+					dung = 1;
+					loi = 0;
+					ht_tram1 = 1;
+					hienthi = 0;
+					//	UARTprintf("di tram 5\n");
+				}
 //             if (ROBOTRX_Buffer[0] == 6 && dung != 1)
 //             {
 //
@@ -557,29 +582,29 @@ void Timer3IntHandler(void) {
 //
 //                 UARTprintf("run\n");
 //             }
-			if (ROBOTRX_Buffer[0] == 7 && tram1 != 1) {
+				if (ROBOTRX_Buffer[0] == 7 && tram1 != 1) {
 
-				tram1 = 1;
-				tram0 = 0;
-				dung = 1;
-				ht_tram1 = 1;
+					tram1 = 1;
+					tram0 = 0;
+					dung = 1;
+					ht_tram1 = 1;
+					hienthi = 0;
+					//	UARTprintf("di tram 1\n");
 
-				UARTprintf("di tram 1\n");
+					//UARTprintf("stop\n");
+				}
+				if (ROBOTRX_Buffer[0] == 8 && nan_ha == 0) {
 
-				UARTprintf("stop\n");
-			}
-			if (ROBOTRX_Buffer[0] == 8 && nan_ha == 0) {
+					nan_ha = 1;
 
-				nan_ha = 1;
+					//	UARTprintf("nan\n");
+				}
+				if (ROBOTRX_Buffer[0] == 9 && nan_ha == 1) {
 
-				UARTprintf("nan\n");
-			}
-			if (ROBOTRX_Buffer[0] == 9 && nan_ha == 1) {
+					nan_ha = 0;
 
-				nan_ha = 0;
-
-				UARTprintf("nan\n");
-			}
+					//	UARTprintf("nan\n");
+				}
 
 //             if (ROBOTRX_Buffer[0] == )
 //             {
@@ -588,12 +613,12 @@ void Timer3IntHandler(void) {
 //
 //                 UARTprintf("stop\n");
 //             }
+			}
+		} else {
+		//	UARTprintf("[WARNING] Robot in processing!!!\n");
 		}
-	} else {
-		UARTprintf("[WARNING] Robot in processing!!!\n");
-	}
 
-}
+	}
 //*****************************************************************************
 //
 // The interrupt handler for the second timer interrupt.
@@ -606,38 +631,38 @@ void Timer3IntHandler(void) {
 //
 //*****************************************************************************
 
-void PORTBIntHandler(void) {
-	uint32_t PortBmask = GPIOIntStatus(GPIO_PORTB_BASE,
-	GPIO_PIN_2 | GPIO_PIN_3);
-	SysCtlDelay(SysCtlClockGet() / 100);
-	hienthi = 1;
-	if (PortBmask & GPIO_PIN_2) {
-		/////////////////////////////////////////////////////////////////////////////////////////////
-		UARTprintf("\n run!");
-		dung = 1;
-		loi = 0;
-		/////////////////////////////////////////////////////////////////////////////////////////////
-		//  SysCtlDelay(SysCtlClockGet() / 100);
-		GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_2);
-	}
-	if (PortBmask & GPIO_PIN_3) {
-		/////////////////////////////////////////////////////////////////////////////////////////////
-		UARTprintf("\n stop !");
-		dung = 0;
+	void PORTBIntHandler(void) {
+		uint32_t PortBmask = GPIOIntStatus(GPIO_PORTB_BASE,
+		GPIO_PIN_2 | GPIO_PIN_3);
+		SysCtlDelay(SysCtlClockGet() / 100);
+		hienthi = 1;
+		if (PortBmask & GPIO_PIN_2) {
+			/////////////////////////////////////////////////////////////////////////////////////////////
+			//UARTprintf("\n run!");
+			dung = 1;
+			loi = 0;
+			/////////////////////////////////////////////////////////////////////////////////////////////
+			//  SysCtlDelay(SysCtlClockGet() / 100);
+			GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_2);
+		}
+		if (PortBmask & GPIO_PIN_3) {
+			/////////////////////////////////////////////////////////////////////////////////////////////
+		//	UARTprintf("\n stop !");
+			dung = 0;
 
-		/////////////////////////////////////////////////////////////////////////////////////////////
-		// SysCtlDelay(SysCtlClockGet()/ 100);
-		GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_3);
-	}
+			/////////////////////////////////////////////////////////////////////////////////////////////
+			// SysCtlDelay(SysCtlClockGet()/ 100);
+			GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_3);
+		}
 
-}
+	}
 
 //*****************************************************************************
 //
 // The interrupt handler for the second timer interrupt.
 //
 //*****************************************************************************
-void PORTCIntHandler(void) {
+	void PORTCIntHandler(void) {
 //    uint32_t PortCmask = GPIOIntStatus(
 //    GPIO_PORTC_BASE, GPIO_PIN_6 | GPIO_PIN_7);
 //    if (di == 1 && loi == 0)
@@ -673,13 +698,13 @@ void PORTCIntHandler(void) {
 //        GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_6);
 //
 //    }
-	///////////////////
-	GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_7);
-	GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_6);
+		///////////////////
+		GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_7);
+		GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_6);
 
-}
+	}
 
-void PORTHIntHandler(void) {
+	void PORTHIntHandler(void) {
 //    uint32_t PortHmask = GPIOIntStatus(
 //            GPIO_PORTH_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
 //    if (di == 1 && loi == 0 )
@@ -750,12 +775,12 @@ void PORTHIntHandler(void) {
 //         }
 /////////////////////////////////////
 
-	GPIOIntClear(GPIO_PORTH_BASE, GPIO_PIN_3);
-	GPIOIntClear(GPIO_PORTH_BASE, GPIO_PIN_2);
-	GPIOIntClear(GPIO_PORTH_BASE, GPIO_PIN_0);
-	GPIOIntClear(GPIO_PORTH_BASE, GPIO_PIN_1);
+		GPIOIntClear(GPIO_PORTH_BASE, GPIO_PIN_3);
+		GPIOIntClear(GPIO_PORTH_BASE, GPIO_PIN_2);
+		GPIOIntClear(GPIO_PORTH_BASE, GPIO_PIN_0);
+		GPIOIntClear(GPIO_PORTH_BASE, GPIO_PIN_1);
 
-}
+	}
 
 //*****************************************************************************
 //
@@ -775,97 +800,97 @@ void PORTHIntHandler(void) {
 // The interrupt handler for the second timer interrupt.
 //
 //*****************************************************************************
-void Timer5IntHandler(void) {
+	void Timer5IntHandler(void) {
 
-	//
-	// Clear the timer interrupt.
-	//
-	ROM_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
-}
+		//
+		// Clear the timer interrupt.
+		//
+		ROM_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
+	}
 
 // Vector Rx/Tx UART0 from PC
-void UART0IntHandler(void) {
-	UARTIntClear(UART0_BASE, UART_INT_RX);
-	while (UARTCharsAvail(UART0_BASE)) {
-		switch (UARTCharGet(UART0_BASE)) {
-		case 'a':
+	void UART0IntHandler(void) {
+		UARTIntClear(UART0_BASE, UART_INT_RX);
+		while (UARTCharsAvail(UART0_BASE)) {
+			switch (UARTCharGet(UART0_BASE)) {
+			case 'a':
 
-			UARTprintf("\n stop robot !");
-			dung = 0;
-			hienthi = 1;
-			// loi = 1;
-			break;
-		case 'd':
+				UARTprintf("\n stop robot !");
+				dung = 0;
+				hienthi = 1;
+				// loi = 1;
+				break;
+			case 'd':
 
-			UARTprintf("\n run!");
-			dung = 1;
-			hienthi = 1;
-			loi = 0;
+				UARTprintf("\n run!");
+				dung = 1;
+				hienthi = 1;
+				loi = 0;
 
-			break;
-		case 'w':
+				break;
+			case 'w':
 
-			UARTprintf("\n nan len");
-			nan_ha = 1;
+				UARTprintf("\n nan len");
+				nan_ha = 1;
 
-			break;
-		case 's':
+				break;
+			case 's':
 
-			UARTprintf("\n ha xuong");
-			nan_ha = 0;
+				UARTprintf("\n ha xuong");
+				nan_ha = 0;
 
-			break;
-		case '1':
-			ROBOTTX_Buffer[0] = 1;
-			break;
-		case '2':
-			ROBOTTX_Buffer[0] = 2;
-			break;
-		case '3':
-			ROBOTTX_Buffer[0] = 3;
-			break;
-		case '4':
-			ROBOTTX_Buffer[0] = 4;
-			break;
-		default:
-			UARTprintf("Unknow\n");
-			break;
+				break;
+			case '1':
+				ROBOTTX_Buffer[0] = 1;
+				break;
+			case '2':
+				ROBOTTX_Buffer[0] = 2;
+				break;
+			case '3':
+				ROBOTTX_Buffer[0] = 3;
+				break;
+			case '4':
+				ROBOTTX_Buffer[0] = 4;
+				break;
+			default:
+				UARTprintf("Unknow\n");
+				break;
+			}
 		}
 	}
-}
 
-void stop1(void) {
-	//  UARTprintf("\n giam: %d", biengiamtoc);
-	di = 0;
-	den = 0;
-	if (biengiamtoc > 2000) {
-		biengiamtoc = biengiamtoc - tocdogiam;
-		tocdo = biengiamtoc;
-	} else {
-		biengiamtoc = 3;
-	}
-
-	MotorController(biengiamtoc, biengiamtoc);
-
-}
-void dithang(void) {
-
-	if (dung == 1) {
-		if (loi == 0) {
-
-			runsenso2();
-
-			den = 1;
-			di = 1;
-
+	void stop1(void) {
+		//  UARTprintf("\n giam: %d", biengiamtoc);
+		di = 0;
+		den = 0;
+		if (biengiamtoc > 2000) {
+			biengiamtoc = biengiamtoc - tocdogiam;
+			tocdo = biengiamtoc;
 		} else {
-			stop1();
-			time = time + 1;
-			//UARTprintf("\n time: %d", time);
+			biengiamtoc = 3;
+		}
 
-			if (time >= 300) {
-				loi = 0;
-			}
+		MotorController(biengiamtoc, biengiamtoc);
+
+	}
+	void dithang(void) {
+
+		if (dung == 1) {
+			if (loi == 0) {
+
+				runsenso2();
+
+				den = 1;
+				di = 1;
+
+			} else {
+				stop1();
+				time = time + 1;
+				//UARTprintf("\n time: %d", time);
+
+				if (time >= 300) {
+					loi = 0;
+				}
 //			} else {
 //				if (GPIOPinRead(GPIO_PORTJ_BASE, GPIO_PIN_0) == 0
 //						|| GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_6) == 64
@@ -891,186 +916,186 @@ void dithang(void) {
 //				}
 //			}
 
-		}
-	} else {
-		den = 0;
-		trai = 3;
-		phai = 3;
-		MotorController(trai, phai);
-		tocdo = 100;
-	}
-
-}
-void runsenso2(void) {
-	senso = GPIOPinRead(GPIO_PORTM_BASE, 0xff);
-
-	unsigned short mask = 128;
-	for (i = 0; i < 8; i++) {
-		if (senso & mask) {
-			//    UARTprintf("1");
-			sensor1[i] = 1;
+			}
 		} else {
-			//   UARTprintf("0");
-			sensor1[i] = 0;
+			den = 0;
+			trai = 3;
+			phai = 3;
+			MotorController(trai, phai);
+			tocdo = 100;
 		}
-		mask >>= 1;
-	}
-	if (tocdo >= bientantoc) {
 
-		// tocdo = 5500;
-		tocdo = tocdo - 300;
-		//tocdo = bientantoc;
 	}
+	void runsenso2(void) {
+		senso = GPIOPinRead(GPIO_PORTM_BASE, 0xff);
+
+		unsigned short mask = 128;
+		for (i = 0; i < 8; i++) {
+			if (senso & mask) {
+				//    UARTprintf("1");
+				sensor1[i] = 1;
+			} else {
+				//   UARTprintf("0");
+				sensor1[i] = 0;
+			}
+			mask >>= 1;
+		}
+		if (tocdo >= bientantoc) {
+
+			// tocdo = 5500;
+			tocdo = tocdo - 300;
+			//tocdo = bientantoc;
+		}
 //	UARTprintf("\n");
-	//	UARTprintf("%d %d %d %d %d %d %d %d",);
-	//SysCtlDelay(SysCtlClockGet() / 1000);
-	////////////////////////////
-	//  UARTprintf("\n td: %d", tocdo);
+		//	UARTprintf("%d %d %d %d %d %d %d %d",);
+		//SysCtlDelay(SysCtlClockGet() / 1000);
+		////////////////////////////
+		//  UARTprintf("\n td: %d", tocdo);
 //         tocdo = tocdo + tocdotan;
 //         biengiamtoc = tocdo;
-	/////////////////////////////////
-	if (sensor1[3] == 1 && sensor1[4] == 1) {
-		tocdo = tocdo + tocdotan;
-		biengiamtoc = tocdo;
-
-		phai = tocdo;
-		trai = tocdo;
-
-	} else {
-
-		if (sensor1[2] == 1 && sensor1[3] == 1) {
+		/////////////////////////////////
+		if (sensor1[3] == 1 && sensor1[4] == 1) {
 			tocdo = tocdo + tocdotan;
 			biengiamtoc = tocdo;
-			phai = tocdo + cap[2];
-			trai = tocdo - cap[2];
-			loi2 = 0;
+
+			phai = tocdo;
+			trai = tocdo;
+
 		} else {
-			if (sensor1[1] == 1 && sensor1[2] == 1) {
+
+			if (sensor1[2] == 1 && sensor1[3] == 1) {
 				tocdo = tocdo + tocdotan;
 				biengiamtoc = tocdo;
-				phai = tocdo + cap[4];
-				trai = tocdo - cap[4];
-
+				phai = tocdo + cap[2];
+				trai = tocdo - cap[2];
+				loi2 = 0;
 			} else {
-				if (sensor1[0] == 1 && sensor1[1] == 1) {
+				if (sensor1[1] == 1 && sensor1[2] == 1) {
 					tocdo = tocdo + tocdotan;
 					biengiamtoc = tocdo;
-					phai = tocdo + cap[6];
-					trai = tocdo - cap[6];
+					phai = tocdo + cap[4];
+					trai = tocdo - cap[4];
 
 				} else {
-					if (sensor1[3] == 1) {
+					if (sensor1[0] == 1 && sensor1[1] == 1) {
 						tocdo = tocdo + tocdotan;
 						biengiamtoc = tocdo;
-						phai = tocdo + cap[1];
-						trai = tocdo - cap[1];
+						phai = tocdo + cap[6];
+						trai = tocdo - cap[6];
 
-					}
-					if (sensor1[2] == 1) {
-						tocdo = tocdo + tocdotan;
-						biengiamtoc = tocdo;
-						phai = tocdo + cap[3];
-						trai = tocdo - cap[3];
+					} else {
+						if (sensor1[3] == 1) {
+							tocdo = tocdo + tocdotan;
+							biengiamtoc = tocdo;
+							phai = tocdo + cap[1];
+							trai = tocdo - cap[1];
 
-					}
-					if (sensor1[1] == 1) {
-						tocdo = tocdo + tocdotan;
-						biengiamtoc = tocdo;
-						phai = tocdo + cap[5];
-						trai = tocdo - cap[5];
+						}
+						if (sensor1[2] == 1) {
+							tocdo = tocdo + tocdotan;
+							biengiamtoc = tocdo;
+							phai = tocdo + cap[3];
+							trai = tocdo - cap[3];
 
-					}
-					if (sensor1[0] == 1) {
-						tocdo = tocdo + tocdotan;
-						biengiamtoc = tocdo;
-						phai = tocdo + cap[7];
-						trai = tocdo - cap[7];
+						}
+						if (sensor1[1] == 1) {
+							tocdo = tocdo + tocdotan;
+							biengiamtoc = tocdo;
+							phai = tocdo + cap[5];
+							trai = tocdo - cap[5];
+
+						}
+						if (sensor1[0] == 1) {
+							tocdo = tocdo + tocdotan;
+							biengiamtoc = tocdo;
+							phai = tocdo + cap[7];
+							trai = tocdo - cap[7];
+						}
 					}
 				}
 			}
-		}
 
 ////////////////////////////////////////
 
-		if (sensor1[4] == 1 && sensor1[5] == 1) {
-			tocdo = tocdo + tocdotan;
-			biengiamtoc = tocdo;
-			phai = tocdo - cap[2];
-			trai = tocdo + cap[2];
-		} else {
-			if (sensor1[5] == 1 && sensor1[6] == 1) {
+			if (sensor1[4] == 1 && sensor1[5] == 1) {
 				tocdo = tocdo + tocdotan;
 				biengiamtoc = tocdo;
-				phai = tocdo - cap[4];
-				trai = tocdo + cap[4];
-
+				phai = tocdo - cap[2];
+				trai = tocdo + cap[2];
 			} else {
-
-				if (sensor1[6] == 1 && sensor1[7] == 1) {
+				if (sensor1[5] == 1 && sensor1[6] == 1) {
 					tocdo = tocdo + tocdotan;
 					biengiamtoc = tocdo;
-					phai = tocdo - cap[6];
-					trai = tocdo + cap[6];
+					phai = tocdo - cap[4];
+					trai = tocdo + cap[4];
 
+				} else {
+
+					if (sensor1[6] == 1 && sensor1[7] == 1) {
+						tocdo = tocdo + tocdotan;
+						biengiamtoc = tocdo;
+						phai = tocdo - cap[6];
+						trai = tocdo + cap[6];
+
+					}
+
+					else {
+						if (sensor1[7] == 1) {
+							tocdo = tocdo + tocdotan;
+							biengiamtoc = tocdo;
+							phai = tocdo - cap[7];
+							trai = tocdo + cap[7];
+
+						}
+						if (sensor1[4] == 1) {
+							tocdo = tocdo + tocdotan;
+							biengiamtoc = tocdo;
+							phai = tocdo - cap[1];
+							trai = tocdo + cap[1];
+
+						}
+
+						if (sensor1[6] == 1) {
+							tocdo = tocdo + tocdotan;
+							biengiamtoc = tocdo;
+							phai = tocdo - cap[5];
+							trai = tocdo + cap[5];
+
+						}
+						if (sensor1[5] == 1) {
+							tocdo = tocdo + tocdotan;
+							biengiamtoc = tocdo;
+							phai = tocdo - cap[3];
+							trai = tocdo + cap[3];
+
+						}
+					}
 				}
 
-				else {
-					if (sensor1[7] == 1) {
-						tocdo = tocdo + tocdotan;
-						biengiamtoc = tocdo;
-						phai = tocdo - cap[7];
-						trai = tocdo + cap[7];
-
-					}
-					if (sensor1[4] == 1) {
-						tocdo = tocdo + tocdotan;
-						biengiamtoc = tocdo;
-						phai = tocdo - cap[1];
-						trai = tocdo + cap[1];
-
-					}
-
-					if (sensor1[6] == 1) {
-						tocdo = tocdo + tocdotan;
-						biengiamtoc = tocdo;
-						phai = tocdo - cap[5];
-						trai = tocdo + cap[5];
-
-					}
-					if (sensor1[5] == 1) {
-						tocdo = tocdo + tocdotan;
-						biengiamtoc = tocdo;
-						phai = tocdo - cap[3];
-						trai = tocdo + cap[3];
-
-					}
-				}
 			}
+		}
+
+		if (sensor1[0] == 0 && sensor1[1] == 0 && sensor1[2] == 0
+				&& sensor1[3] == 0 && sensor1[4] == 0 && sensor1[5] == 0
+				&& sensor1[6] == 0 && sensor1[7] == 0)
+
+				{
+			stop1();
+			loi2 = 10;
+		} else {
+			// UARTprintf( "\ntrai: %d phai: %d  \n", trai, phai);
+			MotorController(phai, trai);
+			//  UARTprintf("\n trai: %d  phai %d", phai , trai);
+		}
+
+	}
+// Vector Rx/Tx UART2 from RFID
+	void UART1IntHandler(void) {
+		UARTIntClear(UART1_BASE, UART_INT_RX);
+		int32_t incoming = 0;
+		while (UARTCharsAvail(UART1_BASE)) {
+			incoming = UARTCharGet(UART1_BASE);
+			UARTprintf("INCOMING %3d: %x\n", incoming);
 
 		}
 	}
-
-	if (sensor1[0] == 0 && sensor1[1] == 0 && sensor1[2] == 0 && sensor1[3] == 0
-			&& sensor1[4] == 0 && sensor1[5] == 0 && sensor1[6] == 0
-			&& sensor1[7] == 0)
-
-			{
-		stop1();
-		loi2 = 10;
-	} else {
-		// UARTprintf( "\ntrai: %d phai: %d  \n", trai, phai);
-		MotorController(phai, trai);
-		//  UARTprintf("\n trai: %d  phai %d", phai , trai);
-	}
-
-}
-// Vector Rx/Tx UART2 from RFID
-void UART1IntHandler(void) {
-	UARTIntClear(UART1_BASE, UART_INT_RX);
-	int32_t incoming = 0;
-	while (UARTCharsAvail(UART1_BASE)) {
-		incoming = UARTCharGet(UART1_BASE);
-		UARTprintf("INCOMING %3d: %x\n", incoming);
-
-	}
-}
