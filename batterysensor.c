@@ -62,7 +62,10 @@ uint32_t ADCGet(uint32_t *adcValues)
     }
     // Read the value from the ADC.
     ADCSequenceDataGet(ADC0_BASE, 0, adcValues);
-    batterypercent = adcValues[0]*100/2976;
+    //batterypercent = adcValues[0]*100/2976;
+    uint32_t volt = (26 - (adcValues[0]/124));
+    batterypercent = 100-((volt*100)/3);
+
     if(batterypercent < 20)
     {
         batterypercent = 20;

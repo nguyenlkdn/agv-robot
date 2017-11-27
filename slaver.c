@@ -103,13 +103,13 @@ int loi = 0;
 int loi1 = 1;
 int loi2 = 0;
 int loi10 = 1;
-int dung = 1;
+int dung = 0;
 int di = 0;
 int hienthi = 1;
 int nan_ha = 0;
 int tram0 = 0;
 int tram1 = 0;
-int boqua = 0;
+int boqua = 1;
 int thongbao = 0;
 int32_t time = 0;
 int32_t speed = 10;
@@ -138,7 +138,7 @@ uint16_t data[10];
 int8_t zigbeesentpackage[BUFFER_SIZE];
 uint32_t rfid_location;
 
-uint8_t batteryStatus[3][6] = {"HIGH", "MEDIUM", "LOW"};
+uint8_t batteryStatus[3][6] = { "HIGH", "MEDIUM", "LOW" };
 
 /*
  *
@@ -149,7 +149,7 @@ uint8_t batteryStatus[3][6] = {"HIGH", "MEDIUM", "LOW"};
  *
  */
 uint32_t adcvalue[12];
-uint32_t robotstatus=0;
+uint32_t robotstatus = 0;
 //////////////reset  khi treo////////////////////////
 //ROM_WatchdogEnable(WATCHDOG0_BASE);
 /////////////////////////////////////////////
@@ -184,14 +184,13 @@ void main(void)
 //      GLCDPrintfNormal(0, 2, "Batery: %d (volt)  ", adcvalue / 124);
 
 	// Loop forever while the timers run.
-
 //     ROM_TimerEnable(TIMER0_BASE, TIMER_A);
 	//   MotorController(4000, 4000);
 	UARTprintf("robot 0k \n");
-	dung = 1;
+	//dung = 1;
 	uint32_t batterypercent = 0;
 	while (1) {
-	    ROM_IntMasterDisable();
+		ROM_IntMasterDisable();
 		//////////////////////////////////////////////////////
 		if (binh == 1) {
 			//GLCDPrintfNormal(5, 1, "RX1: %d, RX2: %d ", ROBOTRX_Buffer[0], ROBOTRX_Buffer[1]);
@@ -200,8 +199,12 @@ void main(void)
 			binh = 0;
 		}
 
-        GLCDPrintfNormal(0, 1, "Robot RX Data: %d %d %d %d %d", ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2], ROBOTRX_Buffer[3], ROBOTRX_Buffer[4]);
-        GLCDPrintfNormal(0, 2, "Robot TX Data: %d %d %d %d %d", ROBOTTX_Buffer[0], ROBOTTX_Buffer[1], ROBOTTX_Buffer[2], ROBOTTX_Buffer[3], ROBOTTX_Buffer[4]);
+		GLCDPrintfNormal(0, 1, "Robot RX Data: %d %d %d %d %d",
+				ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2],
+				ROBOTRX_Buffer[3], ROBOTRX_Buffer[4]);
+		GLCDPrintfNormal(0, 2, "Robot TX Data: %d %d %d %d %d",
+				ROBOTTX_Buffer[0], ROBOTTX_Buffer[1], ROBOTTX_Buffer[2],
+				ROBOTTX_Buffer[3], ROBOTTX_Buffer[4]);
 		///////////////////////////////////////////////////
 		if (loi2 == 0) {
 			if (loi1 != loi) {
@@ -244,44 +247,41 @@ void main(void)
 			}
 		}
 		///////////////////////////////////////////////////
-		if (hienthi == 1) {
+		//if (hienthi == 1) {
+		if (1) {
+			GLCDPrintfNormal(0, 4, "RFID        : %s",RFID_ID);
+
 			hienthi = 0;
-            if(++robotstatus == 100)
-            {
-                if(dung == 1)
-                {
-                    GLCDPrintfNormal(0, 6, "Robot       : ready   ");
-                }
-                else
-                {
-                    GLCDPrintfNormal(0, 6, "Robot       : stop   ");
-                }
-            }
-            else if(robotstatus == 150)
-            {
-                robotstatus = 0;
-                GLCDPrintfNormal(0, 6, "Robot       :        ");
-            }
+			if (++robotstatus == 100) {
+				if (dung == 1) {
+					GLCDPrintfNormal(0, 6, "Robot       : ready   ");
+				} else {
+					GLCDPrintfNormal(0, 6, "Robot       : stop   ");
+				}
+			} else if (robotstatus == 150) {
+				robotstatus = 0;
+				GLCDPrintfNormal(0, 6, "Robot       :        ");
+			}
 		}
-        if (1) {
+		if (1) {
 			GLCDPrintfNormal(0, 7, "Requesting  : %d => %d ", tram0, tram1);
 			ht_tram1 = 0;
 		}
 
 		//////////////////// nan ha khay //////////////////////////
-        if (ROBOTRX_Buffer[1] == 1 && nan_ha == 0) {
-            nan_ha = 1;
-            GLCDPrintfNormal(0, 4, "The Carrier INCREASED !!!");
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, 0);
-        }
+		if (ROBOTRX_Buffer[1] == 1 && nan_ha == 0) {
+			nan_ha = 1;
+			GLCDPrintfNormal(0, 4, "The Carrier INCREASED !!!");
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, 0);
+		}
 
-        if (ROBOTRX_Buffer[1] == 0 && nan_ha == 1) {
-            nan_ha = 0;
-            GLCDPrintfNormal(0, 4, "                         ");
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
-        }
+		if (ROBOTRX_Buffer[1] == 0 && nan_ha == 1) {
+			nan_ha = 0;
+			GLCDPrintfNormal(0, 4, "                         ");
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
+		}
 
 //		if (tram1 == tram0) {
 //			if (nan_ha == 1 && tram0 == 5) {
@@ -346,61 +346,51 @@ void PORTJIntHandler(void) {
 void Timer0IntHandler(void) {
 ////////////////////////////////////////////
 
-    if (tram1 == tram0)
-    {
-        stop1();
-    }
-    else
-    {
-        if (boqua == 1)
-        {
-            if (GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_6) == 64)
-            {
-                loi = 1;
-                time = 0;
-            }
-            ////////////
-            if (
+	if (tram1 == tram0) {
+		stop1();
+	} else {
+		if (boqua == 1) {
+			if (GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_6) == 64) {
+				loi = 1;
+				time = 0;
+			}
+			////////////
+			if (
 
-            GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_7) == 128)
-            {
-                loi = 2;
-                time = 0;
-            }
-            if (
+			GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_7) == 128) {
+				loi = 2;
+				time = 0;
+			}
+			if (
 
-            GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_0) == 1)
-            {
-                loi = 3;
-                time = 0;
-            }
-            if (
+			GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_0) == 1) {
+				loi = 3;
+				time = 0;
+			}
+			if (
 
-            GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_3) == 8)
-            {
-                loi = 4;
-                time = 0;
-            }
-            if (
+			GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_3) == 8) {
+				loi = 4;
+				time = 0;
+			}
+			if (
 
-            GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_2) == 4)
-            {
-                loi = 5;
-                time = 0;
-            }
-        }
-        if (GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_1) == 2)
-        {
-            loi = 9;
-            dung = 0;
-            hienthi = 1;
-            time = 0;
-        }
-        dithang();
-    }
-    //////////////////////////////////////////////
+			GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_2) == 4) {
+				loi = 5;
+				time = 0;
+			}
+		}
+		if (GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_1) == 2) {
+			loi = 9;
+			dung = 0;
+			hienthi = 1;
+			time = 0;
+		}
+		dithang();
+	}
+	//////////////////////////////////////////////
 
-    ROM_TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+	ROM_TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
 }
 
@@ -449,11 +439,14 @@ void Timer1IntHandler(void) {
 			ht_tram0 = 1;
 			UARTprintf("da toi tram 5\n");
 			tram0 = 5;
-		} else if (strcmp(RFID_ID, ":7170BC2") == 0 || strcmp(RFID_ID, ":F3E0BA2") == 0) {
+		} else if (strcmp(RFID_ID, ":7170BC2") == 0
+				|| strcmp(RFID_ID, ":F3E0BA2") == 0
+				|| strcmp(RFID_ID, ":EB84BB2") == 0) {
 			bientantoc = 4000;
 			boqua = 0;
 
-		} else if ( strcmp(RFID_ID, ":0DA9BB2") == 0 ||strcmp(RFID_ID, ":EB88975") == 0 ) {
+		} else if (strcmp(RFID_ID, ":0DA9BB2") == 0
+				|| strcmp(RFID_ID, ":EB88975") == 0) {
 			bientantoc = 10000;
 			boqua = 1;
 
@@ -478,9 +471,9 @@ void Timer1IntHandler(void) {
 				|| strcmp(RFID_ID, ":F636925") == 0
 				|| strcmp(RFID_ID, ":65EB925") == 0
 				|| strcmp(RFID_ID, ":62C4BA2") == 0
-				|| strcmp(RFID_ID, ":EB84BB2") == 0
+				//	|| strcmp(RFID_ID, ":EB84BB2") == 0
 				|| strcmp(RFID_ID, ":EFAABB2") == 0
-			//	|| strcmp(RFID_ID, ":F3E0BA2") == 0
+				//	|| strcmp(RFID_ID, ":F3E0BA2") == 0
 				|| strcmp(RFID_ID, ":1BC7BB2") == 0
 
 				|| strcmp(RFID_ID, ":4DEBBB2") == 0)    //1
@@ -494,7 +487,6 @@ void Timer1IntHandler(void) {
 			UARTprintf("ERROR: Unknown RFID %s ????\n", RFID_ID);
 		}
 		RFID_ID[0] = 0;
-
 	}
 	rfid_location = tram0;
 	ROM_TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
@@ -512,8 +504,8 @@ void Timer3IntHandler(void) {
 	ROM_TimerIntClear(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
 	if (1) {
 		if (ROBOTRX_Buffer[0] > 0) {
-		    ROBOTTX_Buffer[1] = ROBOTRX_Buffer[0];
-			ht_tram0 = 1;
+			ROBOTTX_Buffer[1] = ROBOTRX_Buffer[0];
+		//	ht_tram0 = 1;
 			// UARTprintf("Received location: %d\n", ROBOTRX_Buffer[5]);
 //			if (ROBOTRX_Buffer[0] == 6 && tram1 != 4) {
 //				tram1 = 4;
@@ -525,37 +517,48 @@ void Timer3IntHandler(void) {
 
 			if (ROBOTRX_Buffer[0] == 1 && tram1 != 1) {
 				tram1 = 1;
-				tram0 = 0;
-				dung = 1;
+			//	tram0 = 0;
+				if (ROBOT_STATE == 1) {
+					dung = 1;
+				}
 
 				ht_tram1 = 1;
 				UARTprintf("di tram 1\n");
 			}
-             if (ROBOTRX_Buffer[0] == 2 && tram1 != 2)
-             {
-                 tram1 = 2;
-                 tram0 = 0;
-                 ht_tram1 = 1;
-                 UARTprintf("di tram 2\n");
-             }
+			if (ROBOTRX_Buffer[0] == 2 && tram1 != 2) {
+				tram1 = 2;
+			//	tram0 = 0;
+				ht_tram1 = 1;
+				if (ROBOT_STATE == 1) {
+					dung = 1;
+				}
+				UARTprintf("di tram 2\n");
+			}
 			if (ROBOTRX_Buffer[0] == 3 && tram1 != 3) {
 				tram1 = 3;
-				tram0 = 0;
-				dung = 1;
+			//	tram0 = 0;
+				if (ROBOT_STATE == 1) {
+					dung = 1;
+				}
 				loi = 0;
 				ht_tram1 = 1;
 				UARTprintf("di tram 3\n");
 			}
 			if (ROBOTRX_Buffer[0] == 4 && tram1 != 4) {
 				tram1 = 4;
-				tram0 = 0;
+			//	tram0 = 0;
 				ht_tram1 = 1;
+				if (ROBOT_STATE == 1) {
+					dung = 1;
+				}
 				UARTprintf("di tram 4\n");
 			}
 			if (ROBOTRX_Buffer[0] == 5 && tram1 != 5) {
 				tram1 = 5;
-				tram0 = 0;
-				dung = 1;
+			//	tram0 = 0;
+				if (ROBOT_STATE == 1) {
+					dung = 1;
+				}
 				loi = 0;
 				ht_tram1 = 1;
 				UARTprintf("di tram 5\n");
@@ -613,6 +616,7 @@ void PORTBIntHandler(void) {
 	if (PortBmask & GPIO_PIN_2) {
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		UARTprintf("\n run!");
+		ROBOT_STATE = 1;
 		dung = 1;
 		loi = 0;
 		/////////////////////////////////////////////////////////////////////////////////////////////
@@ -623,7 +627,7 @@ void PORTBIntHandler(void) {
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		UARTprintf("\n stop !");
 		dung = 0;
-
+		ROBOT_STATE = 0;
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		// SysCtlDelay(SysCtlClockGet()/ 100);
 		GPIOIntClear(GPIO_PORTB_BASE, GPIO_PIN_3);
