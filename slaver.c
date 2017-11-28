@@ -411,73 +411,117 @@ void Timer1IntHandler(void) {
 	if (RFID_ID[0] == ':') {
 		binh = 1;
 		//   UARTprintf("RFID ID%s\n", RFID_ID);
-		if (strcmp(RFID_ID, ":1507A88") == 0) {
+		if (
+		        (strcmp(RFID_ID, ":1507A88") == 0) ||
+		        (strcmp(RFID_ID, STATION1IDM1) == 0)
+		   )
+		{
 			UARTprintf("da toi tram 1\n");
 			ROBOTTX_Buffer[0] = 1;
 			tram0 = 1;
 			ht_tram0 = 1;
 
-		} else if (strcmp(RFID_ID, ":C4D1060") == 0) {
+		}
+		else if (
+		        (strcmp(RFID_ID, ":C4D1060") == 0) ||
+		        (strcmp(RFID_ID, STATION2IDM2) == 0)
+		        )
+		{
 			UARTprintf("da toi tram 2\n");
 			ROBOTTX_Buffer[0] = 2;
 			tram0 = 2;
 			ht_tram0 = 1;
 
-		} else if (strcmp(RFID_ID, ":C41EBE0") == 0) {
+		} else if (
+		        (strcmp(RFID_ID, ":C41EBE0") == 0) ||
+		        (strcmp(RFID_ID, STATION3IDM3) == 0)
+		        )
+		{
 			UARTprintf("da toi tram 3\n");
 			tram0 = 3;
 			ht_tram0 = 1;
 			ROBOTTX_Buffer[0] = 3;
 
-		} else if (strcmp(RFID_ID, ":C42A510") == 0) {
+		} else if (
+		        (strcmp(RFID_ID, ":C42A510") == 0) ||
+		        (strcmp(RFID_ID, STATION4IDM4) == 0)
+		        )
+		{
 			UARTprintf("da toi tram 4\n");
 			ROBOTTX_Buffer[0] = 4;
 			tram0 = 4;
 			ht_tram0 = 1;
-		} else if (strcmp(RFID_ID, ":C476220") == 0) {
+		} else if (
+		        (strcmp(RFID_ID, ":C476220") == 0) ||
+		        (strcmp(RFID_ID, STATION5IDM5) == 0)
+		        )
+		{
 			ROBOTTX_Buffer[0] = 5;
 			ht_tram0 = 1;
 			UARTprintf("da toi tram 5\n");
 			tram0 = 5;
-		} else if (strcmp(RFID_ID, ":7170BC2") == 0
-				|| strcmp(RFID_ID, ":F3E0BA2") == 0
-				|| strcmp(RFID_ID, ":EB84BB2") == 0) {
+		}
+		else if (
+		        (strcmp(RFID_ID, ":7170BC2") == 0) ||
+				(strcmp(RFID_ID, ":F3E0BA2") == 0) ||
+				(strcmp(RFID_ID, ":EB84BB2") == 0) ||
+				// Nguyen Truong
+                (strcmp(RFID_ID, ":8C34D72") == 0) ||
+                (strcmp(RFID_ID, ":4C21D72") == 0)
+				)
+		{
 			bientantoc = 4000;
 			boqua = 0;
 
-		} else if (strcmp(RFID_ID, ":0DA9BB2") == 0
-				|| strcmp(RFID_ID, ":EB88975") == 0) {
+		}
+		else if (
+		        (strcmp(RFID_ID, ":0DA9BB2") == 0) ||
+				(strcmp(RFID_ID, ":EB88975") == 0) ||
+				// Nguyen Truong
+				)
+		{
 			bientantoc = 10000;
 			boqua = 1;
 
 		}
 //////////////////////////////////////////////////////////////////////
-		else if (strcmp(RFID_ID, ":D395925") == 0
-				//|| strcmp(RFID_ID, ":EB88975") == 0
-				|| strcmp(RFID_ID, ":38C3BB2") == 0
-				|| strcmp(RFID_ID, ":28AAB02") == 0
-				|| strcmp(RFID_ID, ":FB1D935") == 0
-
-				|| strcmp(RFID_ID, ":B40D935") == 0
-				|| strcmp(RFID_ID, ":50E7925") == 0
-				|| strcmp(RFID_ID, ":5CC2925") == 0
-				|| strcmp(RFID_ID, ":5070925") == 0)    //1
-						{
+		else if (
+		        (strcmp(RFID_ID, ":D395925") == 0) ||
+				(strcmp(RFID_ID, ":38C3BB2") == 0) ||
+				(strcmp(RFID_ID, ":28AAB02") == 0) ||
+				(strcmp(RFID_ID, ":FB1D935") == 0) ||
+				(strcmp(RFID_ID, ":B40D935") == 0) ||
+				(strcmp(RFID_ID, ":50E7925") == 0) ||
+				(strcmp(RFID_ID, ":5CC2925") == 0) ||
+                (strcmp(RFID_ID, ":5070925") == 0) ||
+				// Nguyen Truong
+                (strcmp(RFID_ID, ":A08BD72") == 0) ||
+                (strcmp(RFID_ID, ":DC6EDE2") == 0) ||
+                (strcmp(RFID_ID, ":D050D72") == 0)
+				 )
+		{
 			UARTprintf("tang toc \n");
 			bientantoc = 10000;
 		}
 		/////  ////////////               giam toc /////////////////////////
-		else if (strcmp(RFID_ID, ":5D99925") == 0
-				|| strcmp(RFID_ID, ":F636925") == 0
-				|| strcmp(RFID_ID, ":65EB925") == 0
-				|| strcmp(RFID_ID, ":62C4BA2") == 0
-				//	|| strcmp(RFID_ID, ":EB84BB2") == 0
-				|| strcmp(RFID_ID, ":EFAABB2") == 0
-				//	|| strcmp(RFID_ID, ":F3E0BA2") == 0
-				|| strcmp(RFID_ID, ":1BC7BB2") == 0
-
-				|| strcmp(RFID_ID, ":4DEBBB2") == 0)    //1
-						{
+		else if (
+		        (strcmp(RFID_ID, ":5D99925") == 0) ||
+				(strcmp(RFID_ID, ":F636925") == 0) ||
+				(strcmp(RFID_ID, ":65EB925") == 0) ||
+				(strcmp(RFID_ID, ":62C4BA2") == 0) ||
+				(strcmp(RFID_ID, ":EFAABB2") == 0) ||
+				(strcmp(RFID_ID, ":1BC7BB2") == 0) ||
+                (strcmp(RFID_ID, ":4DEBBB2") == 0) ||
+                // Nguyen Truong added
+                (strcmp(RFID_ID, ":27C7D62") == 0) ||
+                (strcmp(RFID_ID, ":EA31D72") == 0) ||
+                (strcmp(RFID_ID, ":EFAABB2") == 0) ||
+                (strcmp(RFID_ID, ":6A96D72") == 0) ||
+                (strcmp(RFID_ID, ":DA84D62") == 0) ||
+                (strcmp(RFID_ID, ":C779D62") == 0) ||
+                (strcmp(RFID_ID, ":D225D72") == 0)
+				)
+		{
 			UARTprintf("giam toc \n");
 			bientantoc = 4000;
 		}

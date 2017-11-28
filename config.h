@@ -51,6 +51,12 @@
 #define MEM_BUFFER_SIZE          1024
 #define UARTRX_BUFFER_SIZE       50
 #define UARTTX_BUFFER_SIZE       50
+#define STATION1IDM1            ":6E34D62"
+#define STATION2IDM2            ":9174D72"
+#define STATION3IDM3            ":11B3D62"
+#define STATION4IDM4            ":A473D72"
+#define STATION5IDM5            ":E5A6D62"
+
 /*
  * RFID Definaion
  */
