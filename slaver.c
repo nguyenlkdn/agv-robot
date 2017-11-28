@@ -116,7 +116,8 @@ int32_t speed = 10;
 uint8_t ROBOT_STATE = 0;
 uint32_t tocdo = 900; // toc do robot max 600
 uint32_t biengiamtoc = 3; // gia tri giam toc
-uint32_t bientantoc = 5000;  // gia tri tan toc
+//uint32_t bientantoc = 5000;  // gia tri tan toc
+uint32_t bientantoc;
 uint32_t tocdogiam = 300;   // tang giam thoi gian cham dan
 uint8_t tocdotan = 10;    // tang giam thoi gian nhah dan
 int i;
@@ -154,7 +155,6 @@ uint32_t robotstatus = 0;
 //ROM_WatchdogEnable(WATCHDOG0_BASE);
 /////////////////////////////////////////////
 void main(void)
-
 {
 	init();
 	ROM_IntMasterDisable();
@@ -169,7 +169,7 @@ void main(void)
 		STATE = 1;
 	}
 	ROM_IntMasterEnable();
-
+	bientantoc = 5000;
 	//
 	// Enable processor interrupts.
 	//
@@ -476,7 +476,7 @@ void Timer1IntHandler(void) {
 		}
 		else if (
 		        (strcmp(RFID_ID, ":0DA9BB2") == 0) ||
-				(strcmp(RFID_ID, ":EB88975") == 0) ||
+				(strcmp(RFID_ID, ":EB88975") == 0)
 				// Nguyen Truong
 				)
 		{
@@ -497,11 +497,13 @@ void Timer1IntHandler(void) {
 				// Nguyen Truong
                 (strcmp(RFID_ID, ":A08BD72") == 0) ||
                 (strcmp(RFID_ID, ":DC6EDE2") == 0) ||
+                (strcmp(RFID_ID, ":C779D62") == 0) ||
                 (strcmp(RFID_ID, ":D050D72") == 0)
 				 )
 		{
 			UARTprintf("tang toc \n");
 			bientantoc = 10000;
+			boqua = 1;
 		}
 		/////  ////////////               giam toc /////////////////////////
 		else if (
@@ -518,12 +520,13 @@ void Timer1IntHandler(void) {
                 (strcmp(RFID_ID, ":EFAABB2") == 0) ||
                 (strcmp(RFID_ID, ":6A96D72") == 0) ||
                 (strcmp(RFID_ID, ":DA84D62") == 0) ||
-                (strcmp(RFID_ID, ":C779D62") == 0) ||
+                (strcmp(RFID_ID, ":0067B22") == 0) ||
                 (strcmp(RFID_ID, ":D225D72") == 0)
 				)
 		{
 			UARTprintf("giam toc \n");
 			bientantoc = 4000;
+			boqua = 1;
 		}
 
 //////////////////////////////////////////////////////////////////////

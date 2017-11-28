@@ -36,7 +36,8 @@ uint16_t data[5];
 uint8_t g_UART2RX1[UART2RX_BUFFER_SIZE];
 uint8_t g_UART2RX2[UART2RX_BUFFER_SIZE];
 uint32_t rfid_timeout=0;
-
+uint32_t bientantoc;
+uint32_t stored_speed = 0;
 void rfidInBufClear(void)
 {
     int i;
@@ -273,6 +274,8 @@ void Timer2IntHandler(void)
                         break;
                 }
                 RFID_ID[rfdicount] = 0;
+                bientantoc = stored_speed;
+                stored_speed = 0;
 #ifdef RFID_DEBUG
                 UARTprintf("\n");
 #endif
@@ -284,7 +287,7 @@ void Timer2IntHandler(void)
         uint32_t remain = uDMAChannelSizeGet(UDMA_CH12_UART2RX);
         if(remain < UART2RX_BUFFER_SIZE)
         {
-            if(++rfid_timeout == 20)
+            if(++rfid_timeout == 50)
             {
                 UARTprintf("[WARNING] RFID Timeout !!!\n Try to re-start\n");
                 MAP_uDMAChannelDisable(UDMA_CH12_UART2RX);
@@ -293,7 +296,7 @@ void Timer2IntHandler(void)
                                            (void *)(UART2_BASE + UART_O_DR),
                                            g_UART2RX1, sizeof(g_UART2RX1));
                 MAP_uDMAChannelEnable(UDMA_CH12_UART2RX);
-                //rfid_timeout=0;
+                rfid_timeout=0;
             }
         }
 #ifdef RFID_DEBUG
@@ -433,6 +436,8 @@ PORTAIntHandler(void)
     rfidSendCMD("AT+ID");
     if(PortAmask & GPIO_PIN_3){
         /////////////////////////////////////////////////////////////////////////////////////////////
+    	stored_speed = bientantoc;
+    	bientantoc =  5000;
 #ifdef RFID_DEBUG
         UARTprintf("RFID Interrupt !\n");
 #endif
