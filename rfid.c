@@ -437,7 +437,7 @@ PORTAIntHandler(void)
     if(PortAmask & GPIO_PIN_3){
         /////////////////////////////////////////////////////////////////////////////////////////////
     	stored_speed = bientantoc;
-    	bientantoc =  5000;
+    	//bientantoc =  5000;
 #ifdef RFID_DEBUG
         UARTprintf("RFID Interrupt !\n");
 #endif

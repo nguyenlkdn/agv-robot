@@ -114,6 +114,7 @@ int thongbao = 0;
 int32_t time = 0;
 int32_t speed = 10;
 uint8_t ROBOT_STATE = 0;
+uint8_t SENSOR_STATE = 0;
 uint32_t tocdo = 900; // toc do robot max 600
 uint32_t biengiamtoc = 3; // gia tri giam toc
 //uint32_t bientantoc = 5000;  // gia tri tan toc
@@ -125,6 +126,8 @@ int ht_tram1 = 1;
 int ht_tram0 = 1;
 int binh = 1;
 int xuong = 1;
+int32_t leftm, rightm;
+
 //                0   1   2   3   4   5   6    7
 //int32_t cap[8] = { 4500, 100, 200, 250, 390, 520, 690, 700 };
 //int32_t cap[8] = { 5000, 200, 500, 1000, 1800, 2900, 3300, 4000 };
@@ -151,6 +154,8 @@ uint8_t batteryStatus[3][6] = { "HIGH", "MEDIUM", "LOW" };
  */
 uint32_t adcvalue[12];
 uint32_t robotstatus = 0;
+uint32_t debound1=0;
+uint32_t debound2=0;
 //////////////reset  khi treo////////////////////////
 //ROM_WatchdogEnable(WATCHDOG0_BASE);
 /////////////////////////////////////////////
@@ -169,7 +174,7 @@ void main(void)
 		STATE = 1;
 	}
 	ROM_IntMasterEnable();
-	bientantoc = 5000;
+	bientantoc = 7000;
 	//
 	// Enable processor interrupts.
 	//
@@ -202,9 +207,7 @@ void main(void)
 		GLCDPrintfNormal(0, 1, "Robot RX Data: %d %d %d %d %d",
 				ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2],
 				ROBOTRX_Buffer[3], ROBOTRX_Buffer[4]);
-		GLCDPrintfNormal(0, 2, "Robot TX Data: %d %d %d %d %d",
-				ROBOTTX_Buffer[0], ROBOTTX_Buffer[1], ROBOTTX_Buffer[2],
-				ROBOTTX_Buffer[3], ROBOTTX_Buffer[4]);
+		GLCDPrintfNormal(0, 2, "Motor Speed  : %3d %%, %3d %%", rightm/240, leftm/240);
 		///////////////////////////////////////////////////
 		if (loi2 == 0) {
 			if (loi1 != loi) {
@@ -254,13 +257,13 @@ void main(void)
 			hienthi = 0;
 			if (++robotstatus == 100) {
 				if (dung == 1) {
-					GLCDPrintfNormal(0, 6, "Robot       : ready   ");
+					GLCDPrintfNormal(0, 6, "Robot       : Ready(%d)   ", boqua);
 				} else {
-					GLCDPrintfNormal(0, 6, "Robot       : stop   ");
+					GLCDPrintfNormal(0, 6, "Robot       : Stop   ");
 				}
 			} else if (robotstatus == 150) {
 				robotstatus = 0;
-				GLCDPrintfNormal(0, 6, "Robot       :        ");
+				GLCDPrintfNormal(0, 6, "Robot       :           ");
 			}
 		}
 		if (1) {
@@ -301,6 +304,31 @@ void main(void)
 //			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
 //			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
 //		}
+		if(GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_2) == GPIO_PIN_2)
+		{
+		    if(++debound1 == 10)
+		    {
+		        ROBOT_STATE = 1;
+		        dung = 1;
+		        loi = 0;
+		    }
+		}
+		else
+		{
+		    debound1 = 0;
+		}
+        if(GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_3) == 0)
+        {
+            if(++debound2 == 10)
+            {
+                dung = 0;
+                //ROBOT_STATE = 0;
+            }
+        }
+        else
+        {
+            debound2 = 0;
+        }
 		ROM_IntMasterEnable();
 ////////////////////////////////////////////////////////////
 		SysCtlDelay(g_ui32SysClock / 1000);
@@ -413,7 +441,8 @@ void Timer1IntHandler(void) {
 		//   UARTprintf("RFID ID%s\n", RFID_ID);
 		if (
 		        (strcmp(RFID_ID, ":1507A88") == 0) ||
-		        (strcmp(RFID_ID, STATION1IDM1) == 0)
+		        (strcmp(RFID_ID, STATION1IDM1) == 0) ||
+                (strcmp(RFID_ID, ":650C935") == 0)
 		   )
 		{
 			UARTprintf("da toi tram 1\n");
@@ -424,7 +453,8 @@ void Timer1IntHandler(void) {
 		}
 		else if (
 		        (strcmp(RFID_ID, ":C4D1060") == 0) ||
-		        (strcmp(RFID_ID, STATION2IDM2) == 0)
+		        (strcmp(RFID_ID, STATION2IDM2) == 0) ||
+                (strcmp(RFID_ID, ":4FAD925") == 0)
 		        )
 		{
 			UARTprintf("da toi tram 2\n");
@@ -433,7 +463,8 @@ void Timer1IntHandler(void) {
 			ht_tram0 = 1;
 
 		} else if (
-		        (strcmp(RFID_ID, ":C41EBE0") == 0) ||
+                (strcmp(RFID_ID, ":C41EBE0") == 0) ||
+                (strcmp(RFID_ID, ":32AAB12") == 0) ||
 		        (strcmp(RFID_ID, STATION3IDM3) == 0)
 		        )
 		{
@@ -443,7 +474,8 @@ void Timer1IntHandler(void) {
 			ROBOTTX_Buffer[0] = 3;
 
 		} else if (
-		        (strcmp(RFID_ID, ":C42A510") == 0) ||
+                (strcmp(RFID_ID, ":C42A510") == 0) ||
+                (strcmp(RFID_ID, ":98D8925") == 0) ||
 		        (strcmp(RFID_ID, STATION4IDM4) == 0)
 		        )
 		{
@@ -452,7 +484,8 @@ void Timer1IntHandler(void) {
 			tram0 = 4;
 			ht_tram0 = 1;
 		} else if (
-		        (strcmp(RFID_ID, ":C476220") == 0) ||
+                (strcmp(RFID_ID, ":C476220") == 0) ||
+                (strcmp(RFID_ID, ":047ABB2") == 0) ||
 		        (strcmp(RFID_ID, STATION5IDM5) == 0)
 		        )
 		{
@@ -498,7 +531,9 @@ void Timer1IntHandler(void) {
                 (strcmp(RFID_ID, ":A08BD72") == 0) ||
                 (strcmp(RFID_ID, ":DC6EDE2") == 0) ||
                 (strcmp(RFID_ID, ":C779D62") == 0) ||
-                (strcmp(RFID_ID, ":D050D72") == 0)
+                (strcmp(RFID_ID, ":D050D72") == 0) ||
+                (strcmp(RFID_ID, ":94D5925") == 0) ||
+                (strcmp(RFID_ID, ":F747B12") == 0)
 				 )
 		{
 			UARTprintf("tang toc \n");
@@ -521,6 +556,9 @@ void Timer1IntHandler(void) {
                 (strcmp(RFID_ID, ":6A96D72") == 0) ||
                 (strcmp(RFID_ID, ":DA84D62") == 0) ||
                 (strcmp(RFID_ID, ":0067B22") == 0) ||
+                (strcmp(RFID_ID, ":99C8BB2") == 0) ||
+                (strcmp(RFID_ID, ":EA31D72") == 0) ||
+                (strcmp(RFID_ID, ":9174D72") == 0) ||
                 (strcmp(RFID_ID, ":D225D72") == 0)
 				)
 		{

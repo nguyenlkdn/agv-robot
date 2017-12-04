@@ -51,9 +51,7 @@
 #define MEM_BUFFER_SIZE          1024
 #define UARTRX_BUFFER_SIZE       50
 #define UARTTX_BUFFER_SIZE       50
-//#define STATION1IDM1            ":6E34D62"
 #define STATION1IDM1            ":50E7925"
-//#define STATION2IDM2            ":9174D72"
 #define STATION2IDM2            ":74A9925"
 #define STATION3IDM3            ":11B3D62"
 #define STATION4IDM4            ":A473D72"
@@ -117,5 +115,6 @@ extern uint32_t bientantoc;
  * Slaver
  */
 extern uint32_t rfid_location;
+extern int32_t leftm, rightm;
 #endif /* CONFIG_H_ */
 

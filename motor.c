@@ -23,6 +23,7 @@
 #include "driverlib/systick.h"
 #include "utils/uartstdio.h"
 #include "driverlib/pwm.h"
+int32_t leftm, rightm;
 
 void MotorController(int32_t spd_l, int32_t spd_r) {
     if (spd_l < 0) {
@@ -46,6 +47,8 @@ void MotorController(int32_t spd_l, int32_t spd_r) {
         PWMPulseWidthSet(PWM0_BASE, PWM_OUT_6, 2*spd_r+3);
         PWMPulseWidthSet(PWM0_BASE, PWM_OUT_7, 3);
     }
+    leftm = spd_l;
+    rightm = spd_r;
 }
 
 void MotorInit()
