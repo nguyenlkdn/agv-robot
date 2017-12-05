@@ -904,17 +904,20 @@ void UART0IntHandler(void) {
 
 			break;
 		case '1':
-			ROBOTTX_Buffer[0] = 1;
+		    //memcpy(RFID_ID, STATION1IDM1, sizeof(STATION1IDM1));
 			break;
 		case '2':
-			ROBOTTX_Buffer[0] = 2;
+            //memcpy(RFID_ID, STATION2IDM2, sizeof(STATION2IDM2));
 			break;
 		case '3':
-			ROBOTTX_Buffer[0] = 3;
+           // memcpy(RFID_ID, STATION3IDM3, sizeof(STATION3IDM3));
 			break;
 		case '4':
-			ROBOTTX_Buffer[0] = 4;
+            //memcpy(RFID_ID, STATION4IDM4, sizeof(STATION4IDM4));
 			break;
+		case '5':
+            //memcpy(RFID_ID, STATION5IDM5, sizeof(STATION5IDM5));
+		    break;
 		default:
 			UARTprintf("Unknow\n");
 			break;

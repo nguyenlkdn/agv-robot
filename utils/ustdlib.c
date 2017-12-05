@@ -25,7 +25,6 @@
 #include <stdint.h>
 #include "driverlib/debug.h"
 #include "utils/ustdlib.h"
-
 //*****************************************************************************
 //
 //! \addtogroup ustdlib_api

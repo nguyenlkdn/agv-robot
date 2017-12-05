@@ -753,7 +753,6 @@ SysTickHandler(void)
 void
 WatchdogIntHandler(void)
 {
-    UARTprintf("WDTimer handler!\n");
     //
     // If we have been told to stop feeding the watchdog, return immediately
     // without clearing the interrupt.  This will cause the system to reset
