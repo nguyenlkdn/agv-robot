@@ -45,6 +45,7 @@
 #define ZIGBEE_INITED            (1<<0)
 #define MODBUS_INITED            (1<<0)
 #define SYSTICKS_PER_SECOND      (100)
+#define NOLINE_TIMEOUT           (1000)
 /*
  * DMA Defination
  */
