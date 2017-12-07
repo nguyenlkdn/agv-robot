@@ -127,6 +127,7 @@ int ht_tram0 = 1;
 int binh = 1;
 int xuong = 1;
 int32_t leftm, rightm;
+uint32_t noline_counter = 0;
 
 //                0   1   2   3   4   5   6    7
 //int32_t cap[8] = { 4500, 100, 200, 250, 390, 520, 690, 700 };
@@ -204,9 +205,18 @@ void main(void)
 			binh = 0;
 		}
 
-		GLCDPrintfNormal(0, 1, "Robot RX Data: %d %d %d %d %d",
-				ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2],
-				ROBOTRX_Buffer[3], ROBOTRX_Buffer[4]);
+//		GLCDPrintfNormal(0, 1, "Robot RX Data: %d %d %d %d %d",
+//				ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2],
+//				ROBOTRX_Buffer[3], ROBOTRX_Buffer[4]);
+//
+		senso = GPIOPinRead(GPIO_PORTM_BASE, 0xff);
+        GLCDPrintfNormal(0, 1, "Line Value   : %d%d%d%d%d%d%d%d", (senso & 0x80)>>7,
+                         (senso & 0x40)>>6, (senso & 0x20)>>5, (senso & 0x10)>>4, (senso & 0x08)>>3,
+                         (senso & 0x04)>>2, (senso & 0x02)>>1, (senso & 0x01));
+//        UARTprintf("Line Value   : %d%d%d%d%d%d%d%d\n", (senso & 0x80)>>7,
+//                   (senso & 0x40)>>6, (senso & 0x20)>>5, (senso & 0x10)>>4, (senso & 0x08)>>3,
+//                   (senso & 0x04)>>2, (senso & 0x02)>>1, (senso & 0x01));
+
 		GLCDPrintfNormal(0, 2, "Motor Speed  : %3d %%, %3d %%", rightm/240, leftm/240);
 		///////////////////////////////////////////////////
 		if (loi2 == 0) {
@@ -904,19 +914,19 @@ void UART0IntHandler(void) {
 
 			break;
 		case '1':
-		    //memcpy(RFID_ID, STATION1IDM1, sizeof(STATION1IDM1));
+		    memcpy(RFID_ID, STATION1IDM1, sizeof(STATION1IDM1));
 			break;
 		case '2':
-            //memcpy(RFID_ID, STATION2IDM2, sizeof(STATION2IDM2));
+            memcpy(RFID_ID, STATION2IDM2, sizeof(STATION2IDM2));
 			break;
 		case '3':
-           // memcpy(RFID_ID, STATION3IDM3, sizeof(STATION3IDM3));
+            memcpy(RFID_ID, STATION3IDM3, sizeof(STATION3IDM3));
 			break;
 		case '4':
-            //memcpy(RFID_ID, STATION4IDM4, sizeof(STATION4IDM4));
+            memcpy(RFID_ID, STATION4IDM4, sizeof(STATION4IDM4));
 			break;
 		case '5':
-            //memcpy(RFID_ID, STATION5IDM5, sizeof(STATION5IDM5));
+            memcpy(RFID_ID, STATION5IDM5, sizeof(STATION5IDM5));
 		    break;
 		default:
 			UARTprintf("Unknow\n");
@@ -1141,18 +1151,25 @@ void runsenso2(void) {
 		}
 	}
 
-	if (sensor1[0] == 0 && sensor1[1] == 0 && sensor1[2] == 0 && sensor1[3] == 0
-			&& sensor1[4] == 0 && sensor1[5] == 0 && sensor1[6] == 0
-			&& sensor1[7] == 0)
+    if (sensor1[0] == 0 && sensor1[1] == 0 && sensor1[2] == 0 && sensor1[3] == 0
+            && sensor1[4] == 0 && sensor1[5] == 0 && sensor1[6] == 0
+            && sensor1[7] == 0)
 
-			{
-		stop1();
-		loi2 = 10;
-	} else {
-		// UARTprintf( "\ntrai: %d phai: %d  \n", trai, phai);
-		MotorController(phai, trai);
-		//  UARTprintf("\n trai: %d  phai %d", phai , trai);
-	}
+    {
+        if(++noline_counter == NOLINE_TIMEOUT)
+        {
+            stop1();
+            loi2 = 10;
+            noline_counter=0;
+        }
+    }
+    else
+    {
+        noline_counter = 0;
+        // UARTprintf( "\ntrai: %d phai: %d  \n", trai, phai);
+        MotorController(phai, trai);
+        //  UARTprintf("\n trai: %d  phai %d", phai , trai);
+    }
 
 }
 // Vector Rx/Tx UART2 from RFID
