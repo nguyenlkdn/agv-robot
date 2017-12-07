@@ -126,12 +126,13 @@ int ht_tram1 = 1;
 int ht_tram0 = 1;
 int binh = 1;
 int xuong = 1;
+int  bientram4  = 0;
 int32_t leftm, rightm;
 
 //                0   1   2   3   4   5   6    7
 //int32_t cap[8] = { 4500, 100, 200, 250, 390, 520, 690, 700 };
 //int32_t cap[8] = { 5000, 200, 500, 1000, 1800, 2900, 3300, 4000 };
-int32_t cap[8] = { 6000, 400, 900, 1500, 2300, 3200, 4300, 5500 };
+int32_t cap[8] = { 6000, 300, 800, 1500, 2300, 3200, 4300, 5500 };
 //int32_t cap[8] = { 4500, 200, 500, 900, 1500, 2000, 2600, 3400 };
 void runsenso2(void);
 void stop1(void);
@@ -158,6 +159,7 @@ uint32_t debound1=0;
 uint32_t debound2=0;
 //////////////reset  khi treo////////////////////////
 //ROM_WatchdogEnable(WATCHDOG0_BASE);
+
 /////////////////////////////////////////////
 void main(void)
 {
@@ -174,7 +176,7 @@ void main(void)
 		STATE = 1;
 	}
 	ROM_IntMasterEnable();
-	bientantoc = 7000;
+	bientantoc = 5000;
 	//
 	// Enable processor interrupts.
 	//
@@ -192,7 +194,7 @@ void main(void)
 //     ROM_TimerEnable(TIMER0_BASE, TIMER_A);
 	//   MotorController(4000, 4000);
 	UARTprintf("robot 0k \n");
-	//dung = 1;
+	dung = 1;
 	uint32_t batterypercent = 0;
 	while (1) {
 		ROM_IntMasterDisable();
@@ -374,9 +376,10 @@ void PORTJIntHandler(void) {
 void Timer0IntHandler(void) {
 ////////////////////////////////////////////
 
-	if (tram1 == tram0) {
+	if (tram1 == tram0 ) {
 		stop1();
 	} else {
+		if( bientram4  == 0){
 		if (boqua == 1) {
 			if (GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_6) == 64) {
 				loi = 1;
@@ -414,7 +417,9 @@ void Timer0IntHandler(void) {
 			hienthi = 1;
 			time = 0;
 		}
+
 		dithang();
+		}
 	}
 	//////////////////////////////////////////////
 
@@ -483,6 +488,7 @@ void Timer1IntHandler(void) {
 			ROBOTTX_Buffer[0] = 4;
 			tram0 = 4;
 			ht_tram0 = 1;
+			bientram4 = 1;
 		} else if (
                 (strcmp(RFID_ID, ":C476220") == 0) ||
                 (strcmp(RFID_ID, ":047ABB2") == 0) ||
@@ -603,6 +609,7 @@ void Timer3IntHandler(void) {
 			if (ROBOTRX_Buffer[0] == 1 && tram1 != 1) {
 				tram1 = 1;
 			//	tram0 = 0;
+				bientram4 = 0;
 				if (ROBOT_STATE == 1) {
 					dung = 1;
 				}
@@ -1006,10 +1013,10 @@ void runsenso2(void) {
 		}
 		mask >>= 1;
 	}
-	if (tocdo >= bientantoc) {
+	if (tocdo > bientantoc) {
 
 		// tocdo = 5500;
-		tocdo = tocdo - 300;
+		tocdo = tocdo - 300 ;
 		//tocdo = bientantoc;
 	}
 //	UARTprintf("\n");
@@ -1144,7 +1151,6 @@ void runsenso2(void) {
 	if (sensor1[0] == 0 && sensor1[1] == 0 && sensor1[2] == 0 && sensor1[3] == 0
 			&& sensor1[4] == 0 && sensor1[5] == 0 && sensor1[6] == 0
 			&& sensor1[7] == 0)
-
 			{
 		stop1();
 		loi2 = 10;

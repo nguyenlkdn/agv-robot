@@ -28,23 +28,23 @@ int32_t leftm, rightm;
 void MotorController(int32_t spd_l, int32_t spd_r) {
     if (spd_l < 0) {
         spd_l *= -1;
-        PWMPulseWidthSet(PWM0_BASE, PWM_OUT_4, 2*spd_l+3);
+        PWMPulseWidthSet(PWM0_BASE, PWM_OUT_4, 2*spd_l);
         PWMPulseWidthSet(PWM0_BASE, PWM_OUT_5, 3);
     }
     else
     {
         PWMPulseWidthSet(PWM0_BASE, PWM_OUT_4, 3);
-        PWMPulseWidthSet(PWM0_BASE, PWM_OUT_5, 2*spd_l+3);
+        PWMPulseWidthSet(PWM0_BASE, PWM_OUT_5, 2*spd_l);
     }
 
     if (spd_r < 0){
         spd_r *= -1;
         PWMPulseWidthSet(PWM0_BASE, PWM_OUT_6, 3);
-        PWMPulseWidthSet(PWM0_BASE, PWM_OUT_7, 2*spd_r+3);
+        PWMPulseWidthSet(PWM0_BASE, PWM_OUT_7, 2*spd_r);
     }
     else
     {
-        PWMPulseWidthSet(PWM0_BASE, PWM_OUT_6, 2*spd_r+3);
+        PWMPulseWidthSet(PWM0_BASE, PWM_OUT_6, 2*spd_r);
         PWMPulseWidthSet(PWM0_BASE, PWM_OUT_7, 3);
     }
     leftm = spd_l;
