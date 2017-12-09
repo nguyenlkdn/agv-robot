@@ -430,6 +430,9 @@ void Timer0IntHandler(void) {
 
 		dithang();
 		}
+		else {
+			stop1();
+		}
 	}
 	//////////////////////////////////////////////
 
@@ -1174,7 +1177,7 @@ void runsenso2(void) {
     {
         noline_counter = 0;
         // UARTprintf( "\ntrai: %d phai: %d  \n", trai, phai);
-        MotorController(phai, trai);
+        MotorController(phai, trai + 1200);
         //  UARTprintf("\n trai: %d  phai %d", phai , trai);
     }
 }
