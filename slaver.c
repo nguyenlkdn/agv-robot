@@ -960,16 +960,12 @@ void runsenso2(void) {
 
 	unsigned short mask = 128;
 	int invalid = 0;
-	int zerovalue = -1;
-	int nonzerovalue = -1;
 	for (i = 0; i < 8; i++) {
 		if (senso & mask) {
 			sensor1[i] = 1;
 			invalid++;
-			nonzerovalue = 1;
 		} else {
 			sensor1[i] = 0;
-			zerovalue = 1;
 		}
 		mask >>= 1;
 	}
@@ -1099,6 +1095,18 @@ void runsenso2(void) {
 			}
 
 		}
+	}
+	int i;
+	for(i=0;i<5;i++)
+	{
+	    if(
+	            (sensor1[i] == 1) &&
+                (sensor1[i+1] == 0) &&
+                (sensor1[i+2] == 1)
+	      )
+	    {
+	        invalid = 9;
+	    }
 	}
 
     if (senso == 0)
