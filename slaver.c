@@ -175,7 +175,9 @@ void main(void)
 		GLCD_Initalize();
 		STATE = 1;
 	}
+
 	ROBOTTX_Buffer[2] = 3;
+
 	ROM_IntMasterEnable();
 	bientantoc = 5000;
 	//
