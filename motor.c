@@ -50,8 +50,3 @@ void MotorController(int32_t spd_l, int32_t spd_r) {
     leftm = spd_l;
     rightm = spd_r;
 }
-
-void MotorInit()
-{
-
-}

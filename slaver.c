@@ -118,7 +118,7 @@ uint8_t SENSOR_STATE = 0;
 uint32_t tocdo = 900; // toc do robot max 600
 uint32_t biengiamtoc = 3; // gia tri giam toc
 //uint32_t bientantoc = 5000;  // gia tri tan toc
-uint32_t bientantoc;
+uint32_t bientantoc=0;
 uint32_t tocdogiam = 300;   // tang giam thoi gian cham dan
 uint8_t tocdotan = 10;    // tang giam thoi gian nhah dan
 int i;
@@ -167,7 +167,6 @@ void main(void)
 	init();
 	ROM_IntMasterDisable();
 	if (STATE == 0) {
-		MotorInit();
 		GPDSensorInit();
 		LineSensorInit();
 		rfidInit();
@@ -188,12 +187,6 @@ void main(void)
 	SysCtlDelay(g_ui32SysClock / 1000);
 
 	GLCDPrintfNormal(0, 0, "  -----  ROBOTIC AGV -----");
-	//GLCDPrintfNormal(0, 3, "Err : 0              ");
-//      GLCDPrintfNormal(0, 2, "Batery: %d (volt)  ", adcvalue / 124);
-
-	// Loop forever while the timers run.
-//     ROM_TimerEnable(TIMER0_BASE, TIMER_A);
-	//   MotorController(4000, 4000);
 	UARTprintf("robot 0k \n");
 	dung = 1;
 	uint32_t batterypercent = 0;
@@ -207,19 +200,23 @@ void main(void)
 			binh = 0;
 		}
 
+        GLCDPrintfNormal(0, 0, "Motor Left-Right: %5d-%5d    ", trai, phai);
+
+
+
 //		GLCDPrintfNormal(0, 1, "Robot RX Data: %d %d %d %d %d",
 //				ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2],
 //				ROBOTRX_Buffer[3], ROBOTRX_Buffer[4]);
 //
 		senso = GPIOPinRead(GPIO_PORTM_BASE, 0xff);
-        GLCDPrintfNormal(0, 1, "Line Value   : %d%d%d%d%d%d%d%d", (senso & 0x80)>>7,
+        GLCDPrintfNormal(0, 1, "Line Value  : %d%d%d%d%d%d%d%d", (senso & 0x80)>>7,
                          (senso & 0x40)>>6, (senso & 0x20)>>5, (senso & 0x10)>>4, (senso & 0x08)>>3,
                          (senso & 0x04)>>2, (senso & 0x02)>>1, (senso & 0x01));
 //        UARTprintf("Line Value   : %d%d%d%d%d%d%d%d\n", (senso & 0x80)>>7,
 //                   (senso & 0x40)>>6, (senso & 0x20)>>5, (senso & 0x10)>>4, (senso & 0x08)>>3,
 //                   (senso & 0x04)>>2, (senso & 0x02)>>1, (senso & 0x01));
 
-		GLCDPrintfNormal(0, 2, "Motor Speed  : %3d %%, %3d %%", rightm/240, leftm/240);
+		GLCDPrintfNormal(0, 2, "Motor Speed : %3d %%, %3d %%", rightm/240, leftm/240);
 		///////////////////////////////////////////////////
 		if (loi2 == 0) {
 			if (loi1 != loi) {
@@ -279,7 +276,7 @@ void main(void)
 			}
 		}
 		if (1) {
-			GLCDPrintfNormal(0, 7, "Requesting  : %d => %d ", tram0, tram1);
+			GLCDPrintfNormal(0, 7, "Requesting  : %d => %d [%d,%d,%d]", tram0, tram1, ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2]);
 			ht_tram1 = 0;
 		}
 
@@ -298,24 +295,6 @@ void main(void)
 			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
 		}
 
-//		if (tram1 == tram0) {
-//			if (nan_ha == 1 && tram0 == 5) {
-//
-//				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
-//				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, 0);
-//				xuong = 0;
-//
-//			} else {
-//				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
-//				GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
-//
-//				xuong = 1;
-//			}
-//		} else {
-//			nan_ha = 0;
-//			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
-//			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
-//		}
 		if(GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_2) == GPIO_PIN_2)
 		{
 		    if(++debound1 == 10)
@@ -334,7 +313,6 @@ void main(void)
             if(++debound2 == 10)
             {
                 dung = 0;
-                //ROBOT_STATE = 0;
             }
         }
         else
@@ -505,6 +483,8 @@ void Timer1IntHandler(void) {
 		} else if (
                 (strcmp(RFID_ID, ":C476220") == 0) ||
                 (strcmp(RFID_ID, ":047ABB2") == 0) ||
+                (strcmp(RFID_ID, ":38C3BB2") == 0) ||
+                (strcmp(RFID_ID, ":94D5925") == 0) ||
 		        (strcmp(RFID_ID, STATION5IDM5) == 0)
 		        )
 		{
@@ -539,20 +519,16 @@ void Timer1IntHandler(void) {
 //////////////////////////////////////////////////////////////////////
 		else if (
 		        (strcmp(RFID_ID, ":D395925") == 0) ||
-				(strcmp(RFID_ID, ":38C3BB2") == 0) ||
 				(strcmp(RFID_ID, ":28AAB02") == 0) ||
 				(strcmp(RFID_ID, ":FB1D935") == 0) ||
 				(strcmp(RFID_ID, ":B40D935") == 0) ||
-				(strcmp(RFID_ID, ":50E7925") == 0) ||
 				(strcmp(RFID_ID, ":5CC2925") == 0) ||
                 (strcmp(RFID_ID, ":5070925") == 0) ||
 				// Nguyen Truong
                 (strcmp(RFID_ID, ":A08BD72") == 0) ||
                 (strcmp(RFID_ID, ":DC6EDE2") == 0) ||
                 (strcmp(RFID_ID, ":C779D62") == 0) ||
-                (strcmp(RFID_ID, ":D050D72") == 0) ||
-                (strcmp(RFID_ID, ":94D5925") == 0) ||
-                (strcmp(RFID_ID, ":F747B12") == 0)
+                (strcmp(RFID_ID, ":D050D72") == 0)
 				 )
 		{
 			UARTprintf("tang toc \n");
@@ -578,6 +554,8 @@ void Timer1IntHandler(void) {
                 (strcmp(RFID_ID, ":99C8BB2") == 0) ||
                 (strcmp(RFID_ID, ":EA31D72") == 0) ||
                 (strcmp(RFID_ID, ":9174D72") == 0) ||
+                (strcmp(RFID_ID, ":F747B12") == 0) ||
+                (strcmp(RFID_ID, ":50E7925") == 0) ||
                 (strcmp(RFID_ID, ":D225D72") == 0)
 				)
 		{
@@ -668,33 +646,6 @@ void Timer3IntHandler(void) {
 				ht_tram1 = 1;
 				UARTprintf("di tram 5\n");
 			}
-//             if (ROBOTRX_Buffer[0] == 6 && dung != 1)
-//             {
-//
-//
-//                 dung = 1;
-//                 hienthi = 1;
-//
-//                 UARTprintf("run\n");
-//             }
-//			if (ROBOTRX_Buffer[0] == 7 && tram1 != 1) {
-//
-//				tram1 = 1;
-//				tram0 = 0;
-//				dung = 1;
-//				ht_tram1 = 1;
-//
-//				UARTprintf("di tram 1\n");
-//
-//				UARTprintf("stop\n");
-//			}
-//             if (ROBOTRX_Buffer[0] == )
-//             {
-//                 //      ROM_TimerDisable(TIMER0_BASE, TIMER_A);
-//                 dung = 0;
-//
-//                 UARTprintf("stop\n");
-//             }
 		}
 	} else {
 		UARTprintf("[WARNING] Robot in processing!!!\n");
@@ -924,19 +875,19 @@ void UART0IntHandler(void) {
 
 			break;
 		case '1':
-		    memcpy(RFID_ID, STATION1IDM1, sizeof(STATION1IDM1));
+		    //memcpy(RFID_ID, STATION1IDM1, sizeof(STATION1IDM1));
 			break;
 		case '2':
-            memcpy(RFID_ID, STATION2IDM2, sizeof(STATION2IDM2));
+            //memcpy(RFID_ID, STATION2IDM2, sizeof(STATION2IDM2));
 			break;
 		case '3':
-            memcpy(RFID_ID, STATION3IDM3, sizeof(STATION3IDM3));
+            //memcpy(RFID_ID, STATION3IDM3, sizeof(STATION3IDM3));
 			break;
 		case '4':
-            memcpy(RFID_ID, STATION4IDM4, sizeof(STATION4IDM4));
+            //memcpy(RFID_ID, STATION4IDM4, sizeof(STATION4IDM4));
 			break;
 		case '5':
-            memcpy(RFID_ID, STATION5IDM5, sizeof(STATION5IDM5));
+            //memcpy(RFID_ID, STATION5IDM5, sizeof(STATION5IDM5));
 		    break;
 		default:
 			UARTprintf("Unknow\n");
@@ -946,7 +897,6 @@ void UART0IntHandler(void) {
 }
 
 void stop1(void) {
-	//  UARTprintf("\n giam: %d", biengiamtoc);
 	di = 0;
 	den = 0;
 	if (biengiamtoc > 2000) {
@@ -977,31 +927,6 @@ void dithang(void) {
 			if (time >= 300) {
 				loi = 0;
 			}
-//			} else {
-//				if (GPIOPinRead(GPIO_PORTJ_BASE, GPIO_PIN_0) == 0
-//						|| GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_6) == 64
-//						|| GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_7) == 128
-//						|| GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_0) == 1
-//						|| GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_1) == 2
-//						|| GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_2) == 4
-//						|| GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_3) == 8) {
-//
-////					UARTprintf("\n c6= %d",
-////							GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_6));
-////					UARTprintf("\n c7= %d",
-////							GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_7));
-////					UARTprintf("\n h0= %d",
-////							GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_0));
-////					UARTprintf("\n h1= %d",
-////							GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_1));
-////					UARTprintf("\n h2= %d",
-////							GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_2));
-////					UARTprintf("\n h3= %d",
-////							GPIOPinRead(GPIO_PORTH_BASE, GPIO_PIN_3));
-//					time = 0;
-//				}
-//			}
-
 		}
 	} else {
 		den = 0;
@@ -1032,13 +957,7 @@ void runsenso2(void) {
 		tocdo = tocdo - 300 ;
 		//tocdo = bientantoc;
 	}
-//	UARTprintf("\n");
-	//	UARTprintf("%d %d %d %d %d %d %d %d",);
-	//SysCtlDelay(SysCtlClockGet() / 1000);
-	////////////////////////////
-	//  UARTprintf("\n td: %d", tocdo);
-//         tocdo = tocdo + tocdotan;
-//         biengiamtoc = tocdo;
+
 	/////////////////////////////////
 	if (sensor1[3] == 1 && sensor1[4] == 1) {
 		tocdo = tocdo + tocdotan;

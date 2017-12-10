@@ -36,8 +36,6 @@ uint16_t data[5];
 uint8_t g_UART2RX1[UART2RX_BUFFER_SIZE];
 uint8_t g_UART2RX2[UART2RX_BUFFER_SIZE];
 uint32_t rfid_timeout=0;
-uint32_t bientantoc;
-uint32_t stored_speed = 0;
 void rfidInBufClear(void)
 {
     int i;
@@ -274,8 +272,6 @@ void Timer2IntHandler(void)
                         break;
                 }
                 RFID_ID[rfdicount] = 0;
-                bientantoc = stored_speed;
-                stored_speed = 0;
 #ifdef RFID_DEBUG
                 UARTprintf("\n");
 #endif
@@ -436,8 +432,6 @@ PORTAIntHandler(void)
     rfidSendCMD("AT+ID");
     if(PortAmask & GPIO_PIN_3){
         /////////////////////////////////////////////////////////////////////////////////////////////
-    	stored_speed = bientantoc;
-    	//bientantoc =  5000;
 #ifdef RFID_DEBUG
         UARTprintf("RFID Interrupt !\n");
 #endif
