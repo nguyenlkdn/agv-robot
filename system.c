@@ -491,7 +491,7 @@ void cfg_timer(void){
     // Timer 0
     TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_PIOSC);
     TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
-    TimerLoadSet(TIMER0_BASE, TIMER_A, g_ui32SysClock/100);
+    TimerLoadSet(TIMER0_BASE, TIMER_A, g_ui32SysClock/1000);
     ROM_IntEnable(INT_TIMER0A);
     ROM_TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
     //ROM_TimerEnable(TIMER0_BASE, TIMER_A);

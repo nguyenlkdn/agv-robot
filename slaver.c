@@ -213,9 +213,9 @@ void main(void)
 //				ROBOTRX_Buffer[3], ROBOTRX_Buffer[4]);
 //
 		senso = GPIOPinRead(GPIO_PORTM_BASE, 0xff);
-        GLCDPrintfNormal(0, 1, "Line Value  : %d%d%d%d%d%d%d%d", (senso & 0x80)>>7,
+        GLCDPrintfNormal(0, 1, "Line Value  : %d%d%d%d%d%d%d%d (%3d)", (senso & 0x80)>>7,
                          (senso & 0x40)>>6, (senso & 0x20)>>5, (senso & 0x10)>>4, (senso & 0x08)>>3,
-                         (senso & 0x04)>>2, (senso & 0x02)>>1, (senso & 0x01));
+                         (senso & 0x04)>>2, (senso & 0x02)>>1, (senso & 0x01), senso);
 //        UARTprintf("Line Value   : %d%d%d%d%d%d%d%d\n", (senso & 0x80)>>7,
 //                   (senso & 0x40)>>6, (senso & 0x20)>>5, (senso & 0x10)>>4, (senso & 0x08)>>3,
 //                   (senso & 0x04)>>2, (senso & 0x02)>>1, (senso & 0x01));
@@ -223,7 +223,7 @@ void main(void)
 		GLCDPrintfNormal(0, 2, "Motor Speed : %3d %%, %3d %%", rightm/240, leftm/240);
 		///////////////////////////////////////////////////
 		if (loi2 == 0) {
-			if (loi1 != loi) {
+			if (1) {
 				switch (loi) {
 				case 1:
 					GLCDPrintfNormal(0, 5, "Error       : forewarning 1");
@@ -256,8 +256,13 @@ void main(void)
 				loi1 = loi;
 			}
 		} else {
-			if (loi2 == 1) {
-				GLCDPrintfNormal(0, 3, "Error       : NO-LINE       ");
+			if (loi2 == 10)
+			{
+				GLCDPrintfNormal(0, 5, "Error       : NO-LINE       ");
+			}
+			else if(loi2 == 11)
+			{
+			    GLCDPrintfNormal(0, 5, "Error       : SENSOR ERROR  ");
 			}
 		}
 		///////////////////////////////////////////////////
@@ -658,6 +663,7 @@ void Timer3IntHandler(void) {
         ROBOTTX_Buffer[2] = boqua;
     }
 }
+
 //*****************************************************************************
 //
 // The interrupt handler for the second timer interrupt.
@@ -953,13 +959,17 @@ void runsenso2(void) {
 	senso = GPIOPinRead(GPIO_PORTM_BASE, 0xff);
 
 	unsigned short mask = 128;
+	int invalid = 0;
+	int zerovalue = -1;
+	int nonzerovalue = -1;
 	for (i = 0; i < 8; i++) {
 		if (senso & mask) {
-			//    UARTprintf("1");
 			sensor1[i] = 1;
+			invalid++;
+			nonzerovalue = 1;
 		} else {
-			//   UARTprintf("0");
 			sensor1[i] = 0;
+			zerovalue = 1;
 		}
 		mask >>= 1;
 	}
@@ -985,7 +995,6 @@ void runsenso2(void) {
 			biengiamtoc = tocdo;
 			phai = tocdo + cap[2];
 			trai = tocdo - cap[2];
-			loi2 = 0;
 		} else {
 			if (sensor1[1] == 1 && sensor1[2] == 1) {
 				tocdo = tocdo + tocdotan;
@@ -1092,9 +1101,7 @@ void runsenso2(void) {
 		}
 	}
 
-    if (sensor1[0] == 0 && sensor1[1] == 0 && sensor1[2] == 0 && sensor1[3] == 0
-            && sensor1[4] == 0 && sensor1[5] == 0 && sensor1[6] == 0
-            && sensor1[7] == 0)
+    if (senso == 0)
 
     {
         if(++noline_counter == NOLINE_TIMEOUT)
@@ -1104,9 +1111,15 @@ void runsenso2(void) {
             noline_counter=0;
         }
     }
+    else if(invalid >= 3)
+    {
+        stop1();
+        loi2 = 11;
+    }
     else
     {
         noline_counter = 0;
+        loi2 = 0;
         // UARTprintf( "\ntrai: %d phai: %d  \n", trai, phai);
         MotorController(phai, trai + 1200);
         //  UARTprintf("\n trai: %d  phai %d", phai , trai);
