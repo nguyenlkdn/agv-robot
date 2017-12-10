@@ -254,12 +254,10 @@ void main(void)
 					break;
 				}
 				loi1 = loi;
-				loi10 = 1;
 			}
 		} else {
-			if (loi10 == 1) {
-				GLCDPrintfNormal(0, 3, "Err : no line        ");
-				loi10 = 0;
+			if (loi2 == 1) {
+				GLCDPrintfNormal(0, 3, "Error       : NO-LINE       ");
 			}
 		}
 		///////////////////////////////////////////////////
