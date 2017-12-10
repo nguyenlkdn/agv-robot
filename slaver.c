@@ -175,6 +175,7 @@ void main(void)
 		GLCD_Initalize();
 		STATE = 1;
 	}
+	ROBOTTX_Buffer[2] = 3;
 	ROM_IntMasterEnable();
 	bientantoc = 5000;
 	//
@@ -200,7 +201,8 @@ void main(void)
 			binh = 0;
 		}
 
-        GLCDPrintfNormal(0, 0, "Motor Left-Right: %5d-%5d    ", trai, phai);
+        //GLCDPrintfNormal(0, 0, "Motor Left-Right: %5d-%5d    ", trai, phai);
+        //GLCDPrintfNormal(0, 0, "%d %d %d", ROBOTTX_Buffer[0], ROBOTTX_Buffer[1], ROBOTTX_Buffer[2]);
 
 
 
@@ -276,7 +278,7 @@ void main(void)
 			}
 		}
 		if (1) {
-			GLCDPrintfNormal(0, 7, "Requesting  : %d => %d [%d,%d,%d]", tram0, tram1, ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2]);
+			GLCDPrintfNormal(0, 7, "Requesting  : %d => %d [%d,%d,%d,%d]", tram0, tram1, ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2], ROBOTRX_Buffer[3]);
 			ht_tram1 = 0;
 		}
 
@@ -502,22 +504,14 @@ void Timer1IntHandler(void) {
                 (strcmp(RFID_ID, ":4C21D72") == 0)
 				)
 		{
+		    UARTprintf("Giam Toc, Turn off sensor\n");
 			bientantoc = 4000;
 			boqua = 0;
 
 		}
 		else if (
-		        (strcmp(RFID_ID, ":0DA9BB2") == 0) ||
-				(strcmp(RFID_ID, ":EB88975") == 0)
-				// Nguyen Truong
-				)
-		{
-			bientantoc = 10000;
-			boqua = 1;
-
-		}
-//////////////////////////////////////////////////////////////////////
-		else if (
+                (strcmp(RFID_ID, ":0DA9BB2") == 0) ||
+                (strcmp(RFID_ID, ":EB88975") == 0) ||
 		        (strcmp(RFID_ID, ":D395925") == 0) ||
 				(strcmp(RFID_ID, ":28AAB02") == 0) ||
 				(strcmp(RFID_ID, ":FB1D935") == 0) ||
@@ -563,11 +557,11 @@ void Timer1IntHandler(void) {
 			bientantoc = 4000;
 			boqua = 1;
 		}
-
 //////////////////////////////////////////////////////////////////////
 		else {
 			UARTprintf("ERROR: Unknown RFID %s ????\n", RFID_ID);
 		}
+		ROBOTTX_Buffer[2] = boqua;
 		RFID_ID[0] = 0;
 	}
 	rfid_location = tram0;
@@ -584,73 +578,85 @@ void Timer3IntHandler(void) {
 	// Clear the timer interrupt.
 	//
 	ROM_TimerIntClear(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
-	if (1) {
-		if (ROBOTRX_Buffer[0] > 0) {
-			ROBOTTX_Buffer[1] = ROBOTRX_Buffer[0];
-		//	ht_tram0 = 1;
-			// UARTprintf("Received location: %d\n", ROBOTRX_Buffer[5]);
-//			if (ROBOTRX_Buffer[0] == 6 && tram1 != 4) {
-//				tram1 = 4;
-//                tram0 = 0;
-//                dung = 1;
-//				ht_tram1 = 1;
-//				UARTprintf("di tram 4\n");
-//			}
+    if (1)
+    {
+        if (ROBOTRX_Buffer[0] > 0)
+        {
+            ROBOTTX_Buffer[1] = ROBOTRX_Buffer[0];
 
-			if (ROBOTRX_Buffer[0] == 1 && tram1 != 1) {
-				tram1 = 1;
-			//	tram0 = 0;
-				bientram4 = 0;
-				if (ROBOT_STATE == 1) {
-					dung = 1;
-				}
+            if (ROBOTRX_Buffer[0] == 1 && tram1 != 1)
+            {
+                tram1 = 1;
+                //	tram0 = 0;
+                bientram4 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
 
-				ht_tram1 = 1;
-				UARTprintf("di tram 1\n");
-			}
-			if (ROBOTRX_Buffer[0] == 2 && tram1 != 2) {
-				tram1 = 2;
-			//	tram0 = 0;
-				ht_tram1 = 1;
-				if (ROBOT_STATE == 1) {
-					dung = 1;
-				}
-				UARTprintf("di tram 2\n");
-			}
-			if (ROBOTRX_Buffer[0] == 3 && tram1 != 3) {
-				tram1 = 3;
-			//	tram0 = 0;
-				if (ROBOT_STATE == 1) {
-					dung = 1;
-				}
-				loi = 0;
-				ht_tram1 = 1;
-				UARTprintf("di tram 3\n");
-			}
-			if (ROBOTRX_Buffer[0] == 4 && tram1 != 4) {
-				tram1 = 4;
-			//	tram0 = 0;
-				ht_tram1 = 1;
-				if (ROBOT_STATE == 1) {
-					dung = 1;
-				}
-				UARTprintf("di tram 4\n");
-			}
-			if (ROBOTRX_Buffer[0] == 5 && tram1 != 5) {
-				tram1 = 5;
-			//	tram0 = 0;
-				if (ROBOT_STATE == 1) {
-					dung = 1;
-				}
-				loi = 0;
-				ht_tram1 = 1;
-				UARTprintf("di tram 5\n");
-			}
-		}
-	} else {
-		UARTprintf("[WARNING] Robot in processing!!!\n");
-	}
+                ht_tram1 = 1;
+                UARTprintf("di tram 1\n");
+            }
+            if (ROBOTRX_Buffer[0] == 2 && tram1 != 2)
+            {
+                tram1 = 2;
+                //	tram0 = 0;
+                ht_tram1 = 1;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                UARTprintf("di tram 2\n");
+            }
+            if (ROBOTRX_Buffer[0] == 3 && tram1 != 3)
+            {
+                tram1 = 3;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 3\n");
+            }
+            if (ROBOTRX_Buffer[0] == 4 && tram1 != 4)
+            {
+                tram1 = 4;
+                //	tram0 = 0;
+                ht_tram1 = 1;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                UARTprintf("di tram 4\n");
+            }
+            if (ROBOTRX_Buffer[0] == 5 && tram1 != 5)
+            {
+                tram1 = 5;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 5\n");
+            }
+        }
+    }
+    else
+    {
+        UARTprintf("[WARNING] Robot in processing!!!\n");
+    }
 
+    if(ROBOTRX_Buffer[2] != 0)
+    {
+        tram0=ROBOTRX_Buffer[2];
+        boqua=ROBOTRX_Buffer[3];
+        ROBOTTX_Buffer[0] = tram0;
+        ROBOTTX_Buffer[2] = boqua;
+    }
 }
 //*****************************************************************************
 //
@@ -875,19 +881,25 @@ void UART0IntHandler(void) {
 
 			break;
 		case '1':
-		    //memcpy(RFID_ID, STATION1IDM1, sizeof(STATION1IDM1));
+		    memcpy(RFID_ID, STATION1IDM1, sizeof(STATION1IDM1));
 			break;
 		case '2':
-            //memcpy(RFID_ID, STATION2IDM2, sizeof(STATION2IDM2));
+            memcpy(RFID_ID, STATION2IDM2, sizeof(STATION2IDM2));
 			break;
 		case '3':
-            //memcpy(RFID_ID, STATION3IDM3, sizeof(STATION3IDM3));
+            memcpy(RFID_ID, STATION3IDM3, sizeof(STATION3IDM3));
 			break;
 		case '4':
-            //memcpy(RFID_ID, STATION4IDM4, sizeof(STATION4IDM4));
+            memcpy(RFID_ID, STATION4IDM4, sizeof(STATION4IDM4));
 			break;
 		case '5':
-            //memcpy(RFID_ID, STATION5IDM5, sizeof(STATION5IDM5));
+            memcpy(RFID_ID, STATION5IDM5, sizeof(STATION5IDM5));
+		    break;
+		case '9':
+            memcpy(RFID_ID, ":4C21D72", sizeof(STATION5IDM5));
+		    break;
+		case '0':
+		    memcpy(RFID_ID, ":D225D72", sizeof(STATION5IDM5));
 		    break;
 		default:
 			UARTprintf("Unknow\n");
