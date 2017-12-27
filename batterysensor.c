@@ -64,32 +64,32 @@ uint32_t ADCGet(uint32_t *adcValues)
     ADCSequenceDataGet(ADC0_BASE, 0, adcValues);
     //batterypercent = adcValues[0]*100/2976;
     uint32_t volt = (26 - (adcValues[0]/124));
-    batterypercent = 100-((volt*100)/3);
-
-    if(batterypercent < 20)
-    {
-        batterypercent = 20;
-    }
-    else if(batterypercent < 30)
-    {
-        batterypercent = 30;
-    }
-    else if(batterypercent < 50)
-    {
-        batterypercent = 50;
-    }
-    else if(batterypercent < 80)
-    {
-        batterypercent = 80;
-    }
-    else if (batterypercent < 90)
-    {
-        batterypercent = 90;
-    }
-    else
-    {
-        batterypercent = 100;
-    }
+ //   batterypercent = 100-((volt*100)/3);
+       batterypercent = volt;
+//    if(batterypercent < 20)
+//    {
+//        batterypercent = 20;
+//    }
+//    else if(batterypercent < 30)
+//    {
+//        batterypercent = 30;
+//    }
+//    else if(batterypercent < 50)
+//    {
+//        batterypercent = 50;
+//    }
+//    else if(batterypercent < 80)
+//    {
+//        batterypercent = 80;
+//    }
+//    else if (batterypercent < 90)
+//    {
+//        batterypercent = 90;
+//    }
+//    else
+//    {
+//        batterypercent = 100;
+//    }
     return batterypercent;
 }
 
