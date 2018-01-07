@@ -736,6 +736,7 @@ SysTickHandler(void)
         g_ui32Seconds++;
         binh = 1;
         GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, ~GPIOPinRead(GPIO_PORTN_BASE, GPIO_PIN_0));
+        //GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, ~GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_0));
     }
 
     //
@@ -774,4 +775,12 @@ WatchdogIntHandler(void)
     ROM_GPIOPinWrite(GPIO_PORTG_BASE, GPIO_PIN_2,
                      (ROM_GPIOPinRead(GPIO_PORTG_BASE, GPIO_PIN_2) ^
                                      GPIO_PIN_2));
+}
+void WaterOpen(void)
+{
+    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, GPIO_PIN_0);
+}
+void WaterClose(void)
+{
+    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, 0);
 }

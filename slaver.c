@@ -178,7 +178,8 @@ void main(void)
 		STATE = 1;
 	}
 
-	ROBOTTX_Buffer[2] = 3;
+    ROBOTTX_Buffer[2] = 3;
+    ROBOTTX_Buffer[3] = 0;
 
 	ROM_IntMasterEnable();
 	bientantoc = 5000;
@@ -205,22 +206,10 @@ void main(void)
 			binh = 0;
 		}
 
-        //GLCDPrintfNormal(0, 0, "Motor Left-Right: %5d-%5d    ", trai, phai);
-        //GLCDPrintfNormal(0, 0, "%d %d %d", ROBOTTX_Buffer[0], ROBOTTX_Buffer[1], ROBOTTX_Buffer[2]);
-
-
-
-//		GLCDPrintfNormal(0, 1, "Robot RX Data: %d %d %d %d %d",
-//				ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2],
-//				ROBOTRX_Buffer[3], ROBOTRX_Buffer[4]);
-//
 		senso = GPIOPinRead(GPIO_PORTM_BASE, 0xff);
         GLCDPrintfNormal(0, 1, "Line Value  : %d%d%d%d%d%d%d%d (%3d)", (senso & 0x80)>>7,
                          (senso & 0x40)>>6, (senso & 0x20)>>5, (senso & 0x10)>>4, (senso & 0x08)>>3,
                          (senso & 0x04)>>2, (senso & 0x02)>>1, (senso & 0x01), senso);
-//        UARTprintf("Line Value   : %d%d%d%d%d%d%d%d\n", (senso & 0x80)>>7,
-//                   (senso & 0x40)>>6, (senso & 0x20)>>5, (senso & 0x10)>>4, (senso & 0x08)>>3,
-//                   (senso & 0x04)>>2, (senso & 0x02)>>1, (senso & 0x01));
 
 		GLCDPrintfNormal(0, 2, "Motor Speed : %3d %%, %3d %%", rightm/240, leftm/240);
 		///////////////////////////////////////////////////
@@ -288,7 +277,17 @@ void main(void)
 			GLCDPrintfNormal(0, 7, "Requesting  : %d => %d [%d,%d,%d,%d]", tram0, tram1, ROBOTRX_Buffer[0], ROBOTRX_Buffer[1], ROBOTRX_Buffer[2], ROBOTRX_Buffer[3]);
 			ht_tram1 = 0;
 		}
-
+		if(
+		        (tram0 == 4) &&
+		        (tram0 == tram1)
+		  )
+		{
+		    WaterOpen();
+		}
+		else
+		{
+		    WaterClose();
+		}
 		//////////////////// nan ha khay //////////////////////////
 		if (ROBOTRX_Buffer[1] == 1 && nan_ha == 0) {
 			nan_ha = 1;

@@ -25,7 +25,7 @@
 #include "driverlib/adc.h"
 #include "driverlib/systick.h"
 #include "utils/uartstdio.h"
-
+#include "config.h"
 uint32_t g_ui32SysClock;
 void ADCInit()
 {
@@ -47,7 +47,9 @@ void ADCInit()
     ADCSequenceEnable(ADC0_BASE, 0);
 }
 
-
+uint32_t oldbatterypercent = 0;
+uint32_t avgbatterypercent = 0;
+uint32_t cntbatterypercent = 0;
 uint32_t ADCGet(uint32_t *adcValues)
 {
     uint32_t batterypercent = 0;
@@ -62,33 +64,19 @@ uint32_t ADCGet(uint32_t *adcValues)
     }
     // Read the value from the ADC.
     ADCSequenceDataGet(ADC0_BASE, 0, adcValues);
-    //batterypercent = adcValues[0]*100/2976;
     uint32_t volt = (26 - (adcValues[0]/124));
- //   batterypercent = 100-((volt*100)/3);
-       batterypercent = volt;
-//    if(batterypercent < 20)
+    batterypercent = (100-((volt*100)/3));
+    batterypercent = batterypercent*0.1 + oldbatterypercent*0.9;
+    oldbatterypercent = batterypercent;
+
+    avgbatterypercent += batterypercent;
+    ROBOTTX_Buffer[3] = batterypercent;
+//    if(++cntbatterypercent == 10)
 //    {
-//        batterypercent = 20;
-//    }
-//    else if(batterypercent < 30)
-//    {
-//        batterypercent = 30;
-//    }
-//    else if(batterypercent < 50)
-//    {
-//        batterypercent = 50;
-//    }
-//    else if(batterypercent < 80)
-//    {
-//        batterypercent = 80;
-//    }
-//    else if (batterypercent < 90)
-//    {
-//        batterypercent = 90;
-//    }
-//    else
-//    {
-//        batterypercent = 100;
+//        batterypercent = avgbatterypercent/100;
+//        ROBOTTX_Buffer[3] = batterypercent;
+//        avgbatterypercent = 0;
+//        cntbatterypercent=0;
 //    }
     return batterypercent;
 }

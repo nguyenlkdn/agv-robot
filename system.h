@@ -26,6 +26,8 @@ void cfg_qei(void);
 void cfg_wdt(void);
 void cfg_dma(void);
 void init(void);
+void WaterOpen(void);
+void WaterClose(void);
 void* MemoryAllocation(void *fp, uint32_t size);
 
 // ERROR MAPPING
