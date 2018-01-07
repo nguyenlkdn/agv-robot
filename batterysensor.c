@@ -48,8 +48,6 @@ void ADCInit()
 }
 
 uint32_t oldbatterypercent = 0;
-uint32_t avgbatterypercent = 0;
-uint32_t cntbatterypercent = 0;
 uint32_t ADCGet(uint32_t *adcValues)
 {
     uint32_t batterypercent = 0;
@@ -66,18 +64,9 @@ uint32_t ADCGet(uint32_t *adcValues)
     ADCSequenceDataGet(ADC0_BASE, 0, adcValues);
     uint32_t volt = (26 - (adcValues[0]/124));
     batterypercent = (100-((volt*100)/3));
-    batterypercent = batterypercent*0.1 + oldbatterypercent*0.9;
+    batterypercent = batterypercent*0.3 + oldbatterypercent*0.7;
     oldbatterypercent = batterypercent;
-
-    avgbatterypercent += batterypercent;
     ROBOTTX_Buffer[3] = batterypercent;
-//    if(++cntbatterypercent == 10)
-//    {
-//        batterypercent = avgbatterypercent/100;
-//        ROBOTTX_Buffer[3] = batterypercent;
-//        avgbatterypercent = 0;
-//        cntbatterypercent=0;
-//    }
     return batterypercent;
 }
 

@@ -94,6 +94,7 @@ uint8_t g_UART2RX2[UART2RX_BUFFER_SIZE];
 //*****************************************************************************
 uint8_t sensor1[8];
 uint8_t senso = 0;
+uint8_t senso2 = 0;
 int8_t xa = 0;
 int32_t phai = 0;
 int32_t trai = 0;
@@ -209,9 +210,10 @@ void main(void)
 		}
 
 		senso = GPIOPinRead(GPIO_PORTM_BASE, 0xff);
-        GLCDPrintfNormal(0, 1, "Line Value  : %d%d%d%d%d%d%d%d (%3d)", (senso & 0x80)>>7,
+		senso2 = GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
+        GLCDPrintfNormal(0, 1, "Line Value  : %d%d%d%d%d%d%d%d - %d%d%d", (senso & 0x80)>>7,
                          (senso & 0x40)>>6, (senso & 0x20)>>5, (senso & 0x10)>>4, (senso & 0x08)>>3,
-                         (senso & 0x04)>>2, (senso & 0x02)>>1, (senso & 0x01), senso);
+                         (senso & 0x04)>>2, (senso & 0x02)>>1, (senso & 0x01), (senso2&0x08)>>3, (senso2&0x04)>>2, (senso2&0x02)>>1 );
 
 		GLCDPrintfNormal(0, 2, "Motor Speed : %3d %%, %3d %%", rightm/240, leftm/240);
 		///////////////////////////////////////////////////
@@ -965,8 +967,6 @@ void stop1(void) {
 
 }
 void dithang(void) {
-//    MotorControllerPID(0, 0);
-//    return;
 	if (dung == 1) {
 		if (loi == 0) {
            if(bientantoc == 4000){
@@ -1170,7 +1170,8 @@ void runsenso2(void) {
         noline_counter = 0;
         loi2 = 0;
         // UARTprintf( "\ntrai: %d phai: %d  \n", trai, phai);
-        MotorController(phai, trai );
+        //MotorController(phai, trai );
+        MotorController(trai, phai );
         //  UARTprintf("\n trai: %d  phai %d", phai , trai);
     }
 }
@@ -1348,7 +1349,8 @@ void runsenso1(void) {
         noline_counter = 0;
         loi2 = 0;
         // UARTprintf( "\ntrai: %d phai: %d  \n", trai, phai);
-        MotorController(phai, trai );
+        //MotorController(phai, trai );
+        MotorController(trai, phai );
         //  UARTprintf("\n trai: %d  phai %d", phai , trai);
     }
 }

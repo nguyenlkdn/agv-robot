@@ -374,7 +374,7 @@ void cfg_inout(void) {
     ROM_GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_0 | GPIO_PIN_4);
     //GPIOPinTypeGPIOInput(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 
-    ROM_GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
+    ROM_GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_0);
 
     // //Unlock GPIOD7 - Like PF0 its used for NMI - Without this step it doesn't work
      HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = GPIO_LOCK_KEY; //In Tiva include this is the same as "_DD" in older versions (0x4C4F434B)
@@ -492,7 +492,7 @@ void cfg_timer(void){
     // Timer 0
     TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_PIOSC);
     TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
-    TimerLoadSet(TIMER0_BASE, TIMER_A, g_ui32SysClock/50);
+    TimerLoadSet(TIMER0_BASE, TIMER_A, g_ui32SysClock/1000);
     ROM_IntEnable(INT_TIMER0A);
     ROM_TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
     //ROM_TimerEnable(TIMER0_BASE, TIMER_A);
