@@ -23,23 +23,52 @@
 #include "driverlib/pwm.h"
 #include "driverlib/interrupt.h"
 
-uint8_t LineSensorGet(int8_t sensorname)
+int32_t LineSensorGet(void)
 {
-    if (sensorname == 1)
+    uint32_t sensor = GPIOPinRead(GPIO_PORTM_BASE, 0xff)&0xff;
+    if(sensor == 0)
     {
-        return GPIOPinRead(SEN1PORT, OSEN11 | OSEN12 | OSEN13 | OSEN14 | OSEN15 | OSEN16 | OSEN17 | OSEN18);
+        return 256;
     }
-    else if (sensorname == 2)
+    int invalid = 0;
+    int mask = 0x80;
+    int i;
+    int sensor1[8];
+    for (i = 0; i < 8; i++)
     {
-        return GPIOPinRead(SEN2PORT, OSEN21 | OSEN22 | OSEN23 | OSEN24 | OSEN25 | OSEN26 | OSEN27 | OSEN28);
+        if (sensor & mask)
+        {
+            sensor1[i] = 1;
+            invalid++;
+        }
+        else
+        {
+            sensor1[i] = 0;
+        }
+        mask >>= 1;
+    }
+
+    for (i = 0; i < 5; i++)
+    {
+        if ((sensor1[i] == 1) && (sensor1[i + 1] == 0) && (sensor1[i + 2] == 1))
+        {
+            invalid = 9;
+        }
+    }
+    if(invalid >= 3)
+    {
+        return 255;
     }
     else
     {
-        UARTprintf("ERR: Sensor name invalid: %d", sensorname);
-        return 0;
+        return midleftGet(sensor)-midrightGet(sensor);
     }
 }
 
+int32_t SensorValueGet(void)
+{
+
+}
 void LineSensorInit()
 {
     ///ROM_SysCtlPeripheralEnable(SEN1PERH);

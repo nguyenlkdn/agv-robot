@@ -74,7 +74,9 @@
 // GPD6 MAPPING
 #define GPD10PORT    GPIO_PORTH_BASE
 #define PSEN10OUT    GPIO_PIN_3
-uint8_t LineSensorGet(int8_t sensorname);
+int32_t LineSensorGet(void);
+int32_t SensorValueGet(void);
+
 void LineSensorInit();
 void GPDSensorInit();
 #endif /* SENSOR_H_ */
