@@ -11,7 +11,7 @@
 #include <stdbool.h>
 void MotorController(int32_t spd_l, int32_t spd_r);
 void MotorInit();
-
+int32_t MotorControllerPID(int32_t spd_l, int32_t spd_r);
 
 
 

@@ -183,6 +183,8 @@ void main(void)
 
 	ROM_IntMasterEnable();
 	bientantoc = 5000;
+	minspeed = 5000;
+	maxspeed = 10000;
 	//
 	// Enable processor interrupts.
 	//

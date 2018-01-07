@@ -90,6 +90,9 @@ extern uint32_t g_ui32uDMAErrCount;
 extern uint32_t g_ui32CPUUsage;
 extern uint32_t g_ui32Seconds;
 
+uint32_t minspeed;
+uint32_t maxspeed;
+
 extern uint32_t g_ui32RxBufACount;
 extern uint32_t g_ui32RxBufBCount;
 extern volatile uint8_t g_bFeedWatchdog;
