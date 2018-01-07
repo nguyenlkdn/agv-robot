@@ -488,13 +488,15 @@ void cfg_clock(void){
 }
 void cfg_timer(void){
     g_bFeedWatchdog = false;
+
     // Timer 0
     TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_PIOSC);
     TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
-    TimerLoadSet(TIMER0_BASE, TIMER_A, g_ui32SysClock/1000);
+    TimerLoadSet(TIMER0_BASE, TIMER_A, g_ui32SysClock/50);
     ROM_IntEnable(INT_TIMER0A);
     ROM_TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
     //ROM_TimerEnable(TIMER0_BASE, TIMER_A);
+
     // Timer 1
     TimerClockSourceSet(TIMER1_BASE, TIMER_CLOCK_PIOSC);
     ROM_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
@@ -510,7 +512,7 @@ void cfg_timer(void){
     ROM_TimerLoadSet(TIMER3_BASE, TIMER_A, g_ui32SysClock/100);
     ROM_IntEnable(INT_TIMER3A);
     ROM_TimerIntEnable(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
-    ROM_TimerEnable(TIMER3_BASE, TIMER_A);
+    //ROM_TimerEnable(TIMER3_BASE, TIMER_A);
 
     // Timer 4
     TimerClockSourceSet(TIMER4_BASE, TIMER_CLOCK_PIOSC);

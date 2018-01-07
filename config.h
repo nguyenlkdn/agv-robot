@@ -29,7 +29,7 @@
 //#define MEMORY_DEBUG
 //#define MODBUS_DEBUG
 //#define ZIGBEE_DEBUG
-
+#define SENSOR_DEBUG
 //#define RFID_DEBUG
 
 #define MOSBUS_TIMEOUT           (g_ui32SysClock/50)

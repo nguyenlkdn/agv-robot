@@ -22,6 +22,7 @@
 #include "utils/uartstdio.h"
 #include "driverlib/pwm.h"
 #include "driverlib/interrupt.h"
+#include "config.h"
 uint32_t midleftGet(uint32_t data)
 {
     uint32_t ret = ((data>>4)&0x000f);
@@ -48,6 +49,11 @@ uint32_t midrightGet(uint32_t data)
 int32_t LineSensorGet(void)
 {
     uint32_t sensor = GPIOPinRead(GPIO_PORTM_BASE, 0xff)&0xff;
+#ifdef SENSOR_DEBUG
+    UARTprintf("Line Value  : %d%d%d%d%d%d%d%d (%3d)", (sensor & 0x80)>>7,
+                     (sensor & 0x40)>>6, (sensor & 0x20)>>5, (sensor & 0x10)>>4, (sensor & 0x08)>>3,
+                     (sensor & 0x04)>>2, (sensor & 0x02)>>1, (sensor & 0x01), sensor);
+#endif
     if(sensor == 0)
     {
         return 256;
@@ -90,45 +96,68 @@ int32_t LineSensorGet(void)
 int32_t SensorValueGet(void)
 {
     int32_t ret=-1;
-    int32_t value = GPIOPinRead(GPIO_PORTM_BASE, 0xFF);
-    switch ( value )
+    int32_t sensor = GPIOPinRead(GPIO_PORTM_BASE, 0xFF);
+#ifdef SENSOR_DEBUG
+    UARTprintf("Line Value  : %d%d%d%d%d%d%d%d (%3d)", (sensor & 0x80)>>7,
+                     (sensor & 0x40)>>6, (sensor & 0x20)>>5, (sensor & 0x10)>>4, (sensor & 0x08)>>3,
+                     (sensor & 0x04)>>2, (sensor & 0x02)>>1, (sensor & 0x01), sensor);
+#endif
+    switch ( sensor )
     {
         case 38:
             ret = 0;
             break;
         //////////////////////////////////////////////////////////////////
-        case 34:
+        //case 34:        // 0010 0010
+        case 102:        // 0110 0100
             ret = 1;
             break;
-        case 50:
+        //case 50:        // 0011 0010
+        case 98:          // 0110 0010
             ret = 2;
             break;
-        case 18:
+        //case 18:        // 0001 0010
+        case 99:        // 0110 0011
             ret = 3;
             break;
-        case 19:
+        //case 19:        // 0001 0011
+        case 67:        // 0001 0011
             ret = 4;
             break;
-        case 17:
+        //case 17:        // 0001 0001
+        case 65:        // 0001 0001
             ret = 5;
             break;
+        case 1:
+            ret = 10;
+            break;
         //////////////////////////////////////////////////////////////////
-        case 36:
+        case 54:        // 0010 0100
             ret = -1;
             break;
-        case 100:
+        //case 100:       // 0110 0100
+        case 52:       // 0110 0100
             ret = -2;
             break;
-        case 68:
+        //case 68:        // 0100 0100
+        case 60:        // 0100 0100
             ret = -3;
             break;
-        case 76:
+        //case 76:        // 0100 1100
+        case 28:        // 0100 1100
             ret = -4;
             break;
-        case 72:
+        //case 72:        // 0100 1000
+        case 24:        // 0100 1000
             ret = -5;
             break;
+        case 8:
+            ret = -10;
+            break;
         ///////////////////////////////////////////////////////////////////
+        case 0:
+            ret = 128;
+            break;
     }
 
     return ret;

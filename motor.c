@@ -66,8 +66,13 @@ int32_t sampling_time = 5;
 int32_t inv_sampling_time = 50;
 int32_t MotorControllerPID(int32_t spd_l, int32_t spd_r)
 {
-    Err         =   LineSensorGet();
+    Err         =   SensorValueGet();
+    if(Err == 128)
+    {
+        MotorController(3, 3);
+        ROM_TimerIntDisable(TIMER0_BASE, TIMER_A);
 
+    }
     pPart_l         =   kp_l*Err;
     dPart_l         =   kd_l*(Err-pre_err)*inv_sampling_time;
     iPart_l         +=  (ki_l*sampling_time*Err)/1000;

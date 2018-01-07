@@ -183,8 +183,8 @@ void main(void)
 
 	ROM_IntMasterEnable();
 	bientantoc = 5000;
-	minspeed = 5000;
-	maxspeed = 10000;
+	minspeed = 3000;
+	maxspeed = 5000;
 	//
 	// Enable processor interrupts.
 	//
@@ -373,7 +373,30 @@ void PORTJIntHandler(void) {
 //*****************************************************************************
 void Timer0IntHandler(void) {
 ////////////////////////////////////////////
-
+    //MotorControllerPID(0, 0);
+    ROM_TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+//    char chr = UARTCharGetNonBlocking(UART0_BASE);
+//    switch(chr)
+//    {
+//    case 'w':
+//        MotorController(5000, 5000);
+//        break;
+//    case 's':
+//        MotorController(-5000, -5000);
+//        break;
+//    case 'a':
+//        MotorController(5000, 2000);
+//        break;
+//    case 'd':
+//        MotorController(2000, 5000);
+//        break;
+//    case ' ':
+//        MotorController(3, 3);
+//    default:
+//        //MotorController(3, 3);
+//        break;
+//    }
+//    return;
 	if (tram1 == tram0 ) {
 		stop1();
 	} else {
@@ -866,30 +889,38 @@ void UART0IntHandler(void) {
 	while (UARTCharsAvail(UART0_BASE)) {
 		switch (UARTCharGet(UART0_BASE)) {
 		case 'a':
-
-			UARTprintf("\n stop robot !");
-			dung = 0;
-			hienthi = 1;
-			// loi = 1;
+		    MotorController(5000, 2000);
+		    SysCtlDelay(g_ui32SysClock/10);
+//			UARTprintf("\n stop robot !");
+//			dung = 0;
+//			hienthi = 1;
+//			// loi = 1;
 			break;
 		case 'd':
+            MotorController(2000, 5000);
+            SysCtlDelay(g_ui32SysClock/10);
 
-			UARTprintf("\n run!");
-			dung = 1;
-			hienthi = 1;
-			loi = 0;
+//			UARTprintf("\n run!");
+//			dung = 1;
+//			hienthi = 1;
+//			loi = 0;
 
 			break;
 		case 'w':
+            MotorController(5000, 5000);
+            SysCtlDelay(g_ui32SysClock/10);
 
-			UARTprintf("\n nan len");
-			nan_ha = 1;
+//			UARTprintf("\n nan len");
+//			nan_ha = 1;
 
 			break;
 		case 's':
+            MotorController(-5000, -5000);
+            SysCtlDelay(g_ui32SysClock/50);
 
-			UARTprintf("\n ha xuong");
-			nan_ha = 0;
+//
+//			UARTprintf("\n ha xuong");
+//			nan_ha = 0;
 
 			break;
 		case '1':
@@ -934,7 +965,8 @@ void stop1(void) {
 
 }
 void dithang(void) {
-
+//    MotorControllerPID(0, 0);
+//    return;
 	if (dung == 1) {
 		if (loi == 0) {
            if(bientantoc == 4000){

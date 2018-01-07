@@ -1288,7 +1288,7 @@ convert:
 //! \return None.
 //
 //*****************************************************************************
-//#define DEBUG
+#define DEBUG
 void
 UARTprintf(const char *pcString, ...)
 {
