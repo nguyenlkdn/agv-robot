@@ -22,7 +22,29 @@
 #include "utils/uartstdio.h"
 #include "driverlib/pwm.h"
 #include "driverlib/interrupt.h"
-
+uint32_t midleftGet(uint32_t data)
+{
+    uint32_t ret = ((data>>4)&0x000f);
+    return ret;
+}
+uint32_t midrightGet(uint32_t data)
+{
+    uint32_t ret=0;
+    uint32_t readmask=0x0001;
+    uint32_t writemask=0x0008;
+    data &= 0x000f;
+    int i;
+    for(i=0;i<4;i++)
+    {
+        if(data & readmask)
+        {
+            ret |= writemask;
+        }
+        readmask<<=1;
+        writemask>>=1;
+    }
+    return ret;
+}
 int32_t LineSensorGet(void)
 {
     uint32_t sensor = GPIOPinRead(GPIO_PORTM_BASE, 0xff)&0xff;
@@ -67,7 +89,49 @@ int32_t LineSensorGet(void)
 
 int32_t SensorValueGet(void)
 {
+    int32_t ret=-1;
+    int32_t value = GPIOPinRead(GPIO_PORTM_BASE, 0xFF);
+    switch ( value )
+    {
+        case 38:
+            ret = 0;
+            break;
+        //////////////////////////////////////////////////////////////////
+        case 34:
+            ret = 1;
+            break;
+        case 50:
+            ret = 2;
+            break;
+        case 18:
+            ret = 3;
+            break;
+        case 19:
+            ret = 4;
+            break;
+        case 17:
+            ret = 5;
+            break;
+        //////////////////////////////////////////////////////////////////
+        case 36:
+            ret = -1;
+            break;
+        case 100:
+            ret = -2;
+            break;
+        case 68:
+            ret = -3;
+            break;
+        case 76:
+            ret = -4;
+            break;
+        case 72:
+            ret = -5;
+            break;
+        ///////////////////////////////////////////////////////////////////
+    }
 
+    return ret;
 }
 void LineSensorInit()
 {
