@@ -523,114 +523,144 @@ void Timer1IntHandler(void)
         //   UARTprintf("RFID ID%s\n", RFID_ID);
         if (
           (strcmp(RFID_ID, ":E699C05") == 0) ||
-        //  (strcmp(RFID_ID, STATION1IDM1) == 0) ||
-        (strcmp(RFID_ID, ":650C935") == 0))
+          (strcmp(RFID_ID, ":650C935") == 0))
         {
             UARTprintf("da toi tram 1\n");
             ROBOTTX_Buffer[0] = 1;
             tram0 = 1;
-            ht_tram0 = 1;
-            bientantoc = 4000;
+            bientantoc = 9000;
         }
-        else if ((strcmp(RFID_ID, ":C4D1060") == 0)
-                || (strcmp(RFID_ID, ":BC9CE35") == 0)
-                || (strcmp(RFID_ID, ":87CABE5") == 0))
+        else if (
+                (strcmp(RFID_ID, ":87CABE5") == 0))
         {
             UARTprintf("da toi tram 2\n");
             ROBOTTX_Buffer[0] = 2;
             tram0 = 2;
-            ht_tram0 = 1;
             bientantoc = 9000;
         }
-        else if ((strcmp(RFID_ID, ":C41EBE0") == 0)
-                || (strcmp(RFID_ID, ":32AAB12") == 0)
-                || (strcmp(RFID_ID, STATION3IDM3) == 0))
+        else if (
+                (strcmp(RFID_ID, ":C41EBE0") == 0) ||
+                (strcmp(RFID_ID, ":32AAB12") == 0) ||
+                (strcmp(RFID_ID, ":11B3D62") == 0)
+                )
         {
-            UARTprintf("da toi tram 3\n");
-            tram0 = 3;
-            ht_tram0 = 1;
-            ROBOTTX_Buffer[0] = 3;
-            bientantoc = 9000;
-        }
-        else if ((strcmp(RFID_ID, ":C42A510") == 0)
-                || (strcmp(RFID_ID, ":98D8925") == 0)
-                || (strcmp(RFID_ID, STATION4IDM4) == 0))
-        {
-            UARTprintf("da toi tram 4\n");
-            ROBOTTX_Buffer[0] = 4;
-            tram0 = 4;
-            ht_tram0 = 1;
-            bientram4 = 1;
+            UARTprintf("da toi tram 7\n");
+            tram0 = 7;
+            ROBOTTX_Buffer[0] = 7;
             bientantoc = 4000;
         }
-        else if ((strcmp(RFID_ID, ":C476220") == 0)
-                || (strcmp(RFID_ID, ":047ABB2") == 0)
-                || (strcmp(RFID_ID, ":38C3BB2") == 0)
-                || (strcmp(RFID_ID, ":94D5925") == 0)
-                || (strcmp(RFID_ID, STATION5IDM5) == 0))
+        else if (
+                (strcmp(RFID_ID, ":C42A510") == 0) ||
+                (strcmp(RFID_ID, ":98D8925") == 0) ||
+                (strcmp(RFID_ID, ":A473D72") == 0)
+                )
         {
-            ROBOTTX_Buffer[0] = 5;
-            ht_tram0 = 1;
-            UARTprintf("da toi tram 5\n");
-            tram0 = 5;
-            bientantoc = 9000;
+            UARTprintf("da toi tram 4\n");
+            ROBOTTX_Buffer[0] = 15;
+            tram0 = 15;
+            bientram4 = 1;
+            //bientantoc = 4000;
         }
-        else if ((strcmp(RFID_ID, ":7170BC2") == 0)
-                || (strcmp(RFID_ID, ":F3E0BA2") == 0)
-                || (strcmp(RFID_ID, ":EB84BB2") == 0)
-                ||
-                // Nguyen Truong
-                (strcmp(RFID_ID, ":8C34D72") == 0)
-                || (strcmp(RFID_ID, ":4C21D72") == 0))
+        else if (
+                (strcmp(RFID_ID, ":8053BF5") == 0)
+                )
+        {
+            UARTprintf("da toi tram 5\n");
+            ROBOTTX_Buffer[0] = 5;
+            tram0 = 5;
+            //bientantoc = 9000;
+        }
+        else if (
+                (strcmp(RFID_ID, ":196CE45") == 0)
+                )
+        {
+            UARTprintf("da toi tram 8\n");
+            ROBOTTX_Buffer[0] = 8;
+            tram0 = 8;
+            //bientantoc = 9000;
+        }
+        else if (
+                (strcmp(RFID_ID, ":E5A6D62") == 0)
+                )
+        {
+            UARTprintf("da toi tram 10\n");
+            ROBOTTX_Buffer[0] = 10;
+            tram0 = 10;
+            //bientantoc = 9000;
+        }
+        else if (
+                (strcmp(RFID_ID, ":D53AD62") == 0)
+                )
+        {
+            UARTprintf("da toi tram 11\n");
+            ROBOTTX_Buffer[0] = 11;
+            tram0 = 11;
+            //bientantoc = 9000;
+        }
+        else if (
+                (strcmp(RFID_ID, ":42DCC05") == 0)
+                )
+        {
+            UARTprintf("da toi tram 14\n");
+            ROBOTTX_Buffer[0] = 14;
+            tram0 = 14;
+            //bientantoc = 9000;
+        }
+        else if (
+                (strcmp(RFID_ID, ":7170BC2") == 0) ||
+                (strcmp(RFID_ID, ":F3E0BA2") == 0) ||
+                (strcmp(RFID_ID, ":EB84BB2") == 0) ||
+                (strcmp(RFID_ID, ":8C34D72") == 0) ||
+                (strcmp(RFID_ID, ":4C21D72") == 0)
+                )
         {
             UARTprintf("Giam Toc, Turn off sensor\n");
             bientantoc = 4000;
             boqua = 0;
 
         }
-        else if ((strcmp(RFID_ID, ":0DA9BB2") == 0)
-                || (strcmp(RFID_ID, ":EB88975") == 0)
-                || (strcmp(RFID_ID, ":D395925") == 0)
-                || (strcmp(RFID_ID, ":28AAB02") == 0)
-                || (strcmp(RFID_ID, ":FB1D935") == 0)
-                || (strcmp(RFID_ID, ":B40D935") == 0)
-                || (strcmp(RFID_ID, ":5CC2925") == 0)
-                || (strcmp(RFID_ID, ":5070925") == 0)
-                ||
-                // Nguyen Truong
-                (strcmp(RFID_ID, ":A08BD72") == 0)
-                || (strcmp(RFID_ID, ":DC6EDE2") == 0)
-                || (strcmp(RFID_ID, ":C779D62") == 0)
-                || (strcmp(RFID_ID, ":C69EC05") == 0)
-                || (strcmp(RFID_ID, ":D050D72") == 0))
+        else if (
+                (strcmp(RFID_ID, ":0DA9BB2") == 0) ||
+                (strcmp(RFID_ID, ":EB88975") == 0) ||
+                (strcmp(RFID_ID, ":D395925") == 0) ||
+                (strcmp(RFID_ID, ":28AAB02") == 0) ||
+                (strcmp(RFID_ID, ":FB1D935") == 0) ||
+                (strcmp(RFID_ID, ":B40D935") == 0) ||
+                (strcmp(RFID_ID, ":5CC2925") == 0) ||
+                (strcmp(RFID_ID, ":5070925") == 0) ||
+                (strcmp(RFID_ID, ":A08BD72") == 0) ||
+                (strcmp(RFID_ID, ":DC6EDE2") == 0) ||
+                (strcmp(RFID_ID, ":C779D62") == 0) ||
+                (strcmp(RFID_ID, ":C69EC05") == 0) ||
+                (strcmp(RFID_ID, ":D050D72") == 0)
+                )
         {
             UARTprintf("tang toc \n");
             bientantoc = 9000;
             boqua = 1;
         }
         /////  ////////////               giam toc /////////////////////////
-        else if ((strcmp(RFID_ID, ":5D99925") == 0)
-                || (strcmp(RFID_ID, ":F636925") == 0)
-                || (strcmp(RFID_ID, ":65EB925") == 0)
-                || (strcmp(RFID_ID, ":62C4BA2") == 0)
-                || (strcmp(RFID_ID, ":EFAABB2") == 0)
-                || (strcmp(RFID_ID, ":1BC7BB2") == 0)
-                || (strcmp(RFID_ID, ":4DEBBB2") == 0)
-                ||
-                // Nguyen Truong added
-                (strcmp(RFID_ID, ":27C7D62") == 0)
-                || (strcmp(RFID_ID, ":EA31D72") == 0)
-                || (strcmp(RFID_ID, ":EFAABB2") == 0)
-                || (strcmp(RFID_ID, ":6A96D72") == 0)
-                || (strcmp(RFID_ID, ":DA84D62") == 0)
-                || (strcmp(RFID_ID, ":0067B22") == 0)
-                || (strcmp(RFID_ID, ":99C8BB2") == 0)
-                || (strcmp(RFID_ID, ":EA31D72") == 0)
-                || (strcmp(RFID_ID, ":9174D72") == 0)
-                || (strcmp(RFID_ID, ":F747B12") == 0)
-                || (strcmp(RFID_ID, ":50E7925") == 0)
-                || (strcmp(RFID_ID, ":A82FC75") == 0)
-                || (strcmp(RFID_ID, ":D225D72") == 0))
+        else if ((strcmp(RFID_ID, ":5D99925") == 0) ||
+                (strcmp(RFID_ID, ":F636925") == 0) ||
+                (strcmp(RFID_ID, ":65EB925") == 0) ||
+                (strcmp(RFID_ID, ":62C4BA2") == 0) ||
+                (strcmp(RFID_ID, ":EFAABB2") == 0) ||
+                (strcmp(RFID_ID, ":1BC7BB2") == 0) ||
+                (strcmp(RFID_ID, ":4DEBBB2") == 0) ||
+                (strcmp(RFID_ID, ":27C7D62") == 0)  ||
+                (strcmp(RFID_ID, ":EA31D72") == 0) ||
+                (strcmp(RFID_ID, ":EFAABB2") == 0) ||
+                (strcmp(RFID_ID, ":6A96D72") == 0) ||
+                (strcmp(RFID_ID, ":DA84D62") == 0) ||
+                (strcmp(RFID_ID, ":0067B22") == 0) ||
+                (strcmp(RFID_ID, ":99C8BB2") == 0) ||
+                (strcmp(RFID_ID, ":EA31D72") == 0) ||
+                (strcmp(RFID_ID, ":9174D72") == 0) ||
+                (strcmp(RFID_ID, ":F747B12") == 0) ||
+                (strcmp(RFID_ID, ":50E7925") == 0) ||
+                (strcmp(RFID_ID, ":A82FC75") == 0) ||
+                (strcmp(RFID_ID, ":D225D72") == 0)
+                )
         {
             UARTprintf("giam toc \n");
             bientantoc = 4000;
@@ -992,13 +1022,13 @@ void UART0IntHandler(void)
             memcpy(RFID_ID, STATION4IDM4, sizeof(STATION4IDM4));
             break;
         case '5':
-            memcpy(RFID_ID, STATION5IDM5, sizeof(STATION5IDM5));
+            //memcpy(RFID_ID, STATION5IDM5, sizeof(STATION5IDM5));
             break;
         case '9':
-            memcpy(RFID_ID, ":4C21D72", sizeof(STATION5IDM5));
+            //memcpy(RFID_ID, ":4C21D72", sizeof(STATION5IDM5));
             break;
         case '0':
-            memcpy(RFID_ID, ":D225D72", sizeof(STATION5IDM5));
+            //memcpy(RFID_ID, ":D225D72", sizeof(STATION5IDM5));
             break;
         default:
             UARTprintf("Unknow\n");

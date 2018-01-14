@@ -56,7 +56,7 @@
 #define STATION2IDM2            ":74A9925"
 #define STATION3IDM3            ":11B3D62"
 #define STATION4IDM4            ":A473D72"
-#define STATION5IDM5            ":E5A6D62"
+//#define STATION5IDM5            ":E5A6D62"
 
 /*
  * RFID Definaion
