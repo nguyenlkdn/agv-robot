@@ -142,6 +142,7 @@ int32_t cap1[11] = { 6000, 300, 800, 1100, 1500, 1800, 2300, 3200, 3200, 4300, 5
 //int32_t cap1[8] = { 4000, 300, 700, 1300, 2000, 2800, 4000, 5200 };
 void runsenso2(void);
 void runsenso1(void);
+void runsenso3(void);
 void stop1(void);
 void dithang(void);
 
@@ -1278,7 +1279,7 @@ void runsenso2(void)
 }
 /////////////////////////////////////////////////////chay nhanh//////////////////////////////
 
-void runsenso1(void)
+void runsenso3(void)
 {
     senso = GPIOPinRead(GPIO_PORTM_BASE, 0xff);
 
@@ -1297,13 +1298,7 @@ void runsenso1(void)
         }
         mask >>= 1;
     }
-    if (tocdo > bientantoc)
-    {
 
-        // tocdo = 5500;
-        tocdo = tocdo - 300;
-        //tocdo = bientantoc;
-    }
 
     /////////////////////////////////
 /////////////////////////if (((senso2 & 0x02)>>1) == 1) ((senso2 & 0x04)>>2) == 1, s3==3
@@ -1741,5 +1736,315 @@ void UART1IntHandler(void)
         incoming = UARTCharGet(UART1_BASE);
         UARTprintf("INCOMING %3d: %x\n", incoming);
 
+    }
+}
+void runsenso1(void)
+{
+    senso = GPIOPinRead(GPIO_PORTM_BASE, 0xff);
+
+    unsigned short mask = 128;
+    int invalid = 0;
+    for (i = 0; i < 8; i++)
+    {
+        if (senso & mask)
+        {
+            sensor1[i] = 1;
+            invalid++;
+        }
+        else
+        {
+            sensor1[i] = 0;
+        }
+        mask >>= 1;
+    }
+    if (tocdo > bientantoc)
+    {
+
+        // tocdo = 5500;
+        tocdo = tocdo - 300;
+        //tocdo = bientantoc;
+    }
+
+    /////////////////////////////////
+/////////////////////////if (((senso2 & 0x02)>>1) == 1) ((senso2 & 0x04)>>2) == 1, s3==3
+  /*  if (sensor1[4] == 1 && ((senso2 & 0x04)>>2) == 1 && sensor1[3] == 1 && ((senso2 & 0x02) >> 1) == 1)
+    {
+        tocdo = tocdo + tocdotan;
+        biengiamtoc = tocdo;
+
+        phai = tocdo + cap1[1];
+        trai = tocdo - cap1[1];
+    }
+    else
+    {
+        if (((senso2 & 0x04)>>2) == 1 && sensor1[3] == 1 && ((senso2 & 0x02)>>1) == 1)
+        {
+            tocdo = tocdo + tocdotan;
+            biengiamtoc = tocdo;
+
+            phai = tocdo + cap1[2];
+            trai = tocdo - cap1[2];
+        }
+        if (sensor1[4] == 1 && ((senso2 & 0x04)>>2) == 1 && sensor1[3] == 1)
+        {
+            tocdo = tocdo + tocdotan;
+            biengiamtoc = tocdo;
+
+            phai = tocdo;
+            trai = tocdo;
+        }
+    }
+//////////////////////////////
+    if (sensor1[2] == 1 && ((senso2 & 0x04)>>2) == 1 && sensor1[3] == 1 && ((senso2 & 0x02)>>1) == 1)
+    {
+        tocdo = tocdo + tocdotan;
+        biengiamtoc = tocdo;
+
+        phai = tocdo + cap1[3];
+        trai = tocdo - cap1[3];
+    }
+    else
+    {
+        if (sensor1[2] == 1 && sensor1[3] == 1 && ((senso2 & 0x02)>>1) == 1)
+        {
+            tocdo = tocdo + tocdotan;
+            biengiamtoc = tocdo;
+
+            phai = tocdo + cap1[4];
+            trai = tocdo - cap1[4];
+        }
+        else
+        {
+            if (sensor1[2] == 1 && ((senso2 & 0x02)>>1) == 1)
+            {
+                tocdo = tocdo + tocdotan;
+                biengiamtoc = tocdo;
+
+                phai = tocdo + cap1[5];
+                trai = tocdo - cap1[5];
+            }
+            else
+            {
+                if (sensor1[2] == 1)
+                {
+                    tocdo = tocdo + tocdotan;
+                    biengiamtoc = tocdo;
+
+                    phai = tocdo + cap1[6];
+                    trai = tocdo - cap1[6];
+                }
+            }
+            if (sensor1[2] == 1 && sensor1[1] == 1)
+            {
+                tocdo = tocdo + tocdotan;
+                biengiamtoc = tocdo;
+
+                phai = tocdo + cap1[7];
+                trai = tocdo - cap1[7];
+            }
+            else
+            {
+                if (sensor1[1] == 1)
+                {
+                    tocdo = tocdo + tocdotan;
+                    biengiamtoc = tocdo;
+
+                    phai = tocdo + cap1[8];
+                    trai = tocdo - cap1[8];
+                }
+            }
+            if (sensor1[0] == 1 && sensor1[1] == 1)
+            {
+                tocdo = tocdo + tocdotan;
+                biengiamtoc = tocdo;
+
+                phai = tocdo + cap1[9];
+                trai = tocdo - cap1[9];
+            }
+            else
+            {
+                if (sensor1[1] == 1)
+                {
+                    tocdo = tocdo + tocdotan;
+                    biengiamtoc = tocdo;
+
+                    phai = tocdo + cap1[10];
+                    trai = tocdo - cap1[10];
+                }
+            }
+        }
+    }
+    //////do line 2 ben trai ////////////
+    if (sensor1[4] == 1 && ((senso2 & 0x04)>>2) == 1 && sensor1[3] == 1 && ((senso2 & 0x08)>>3) == 1)
+     {
+         tocdo = tocdo + tocdotan;
+         biengiamtoc = tocdo;
+
+         phai = tocdo - cap1[1];
+         trai = tocdo + cap1[1];
+     }
+     else
+     {
+         if (((senso2 & 0x04)>>2) == 1 && sensor1[4] == 1 && ((senso2 & 0x08)>>3) == 1)
+         {
+             tocdo = tocdo + tocdotan;
+             biengiamtoc = tocdo;
+
+             phai = tocdo - cap1[2];
+             trai = tocdo + cap1[2];
+         }
+         if (sensor1[3] == 1 && ((senso2 & 0x04)>>2) == 1 && sensor1[4] == 1)
+         {
+             tocdo = tocdo + tocdotan;
+             biengiamtoc = tocdo;
+
+             phai = tocdo;
+             trai = tocdo;
+         }
+     }
+ //////////////////////////////
+     if (sensor1[5] == 1 && ((senso2 & 0x04)>>2) == 1 && sensor1[3] == 1 && ((senso2 & 0x08)>>3) == 1)
+     {
+         tocdo = tocdo + tocdotan;
+         biengiamtoc = tocdo;
+
+         phai = tocdo - cap1[3];
+         trai = tocdo + cap1[3];
+     }
+     else
+     {
+         if (sensor1[5] == 1 && sensor1[3] == 1 && ((senso2 & 0x08)>>3) == 1)
+         {
+             tocdo = tocdo + tocdotan;
+             biengiamtoc = tocdo;
+
+             phai = tocdo - cap1[4];
+             trai = tocdo + cap1[4];
+         }
+         else
+         {
+             if (sensor1[5] == 1 && ((senso2 & 0x08)>>3) == 1)
+             {
+                 tocdo = tocdo + tocdotan;
+                 biengiamtoc = tocdo;
+
+                 phai = tocdo - cap1[5];
+                 trai = tocdo + cap1[5];
+             }
+             else
+             {
+                 if (sensor1[5] == 1)
+                 {
+                     tocdo = tocdo + tocdotan;
+                     biengiamtoc = tocdo;
+
+                     phai = tocdo - cap1[6];
+                     trai = tocdo + cap1[6];
+                 }
+             }
+             if (sensor1[5] == 1 && sensor1[6] == 1)
+             {
+                 tocdo = tocdo + tocdotan;
+                 biengiamtoc = tocdo;
+
+                 phai = tocdo - cap1[7];
+                 trai = tocdo + cap1[7];
+             }
+             else
+             {
+                 if (sensor1[6] == 1)
+                 {
+                     tocdo = tocdo + tocdotan;
+                     biengiamtoc = tocdo;
+
+                     phai = tocdo - cap1[8];
+                     trai = tocdo + cap1[8];
+                 }
+             }
+             if (sensor1[7] == 1 && sensor1[6] == 1)
+             {
+                 tocdo = tocdo + tocdotan;
+                 biengiamtoc = tocdo;
+
+                 phai = tocdo - cap1[9];
+                 trai = tocdo + cap1[9];
+             }
+             else
+             {
+                 if (sensor1[7] == 1)
+                 {
+                     tocdo = tocdo + tocdotan;
+                     biengiamtoc = tocdo;
+
+                     phai = tocdo - cap1[10];
+                     trai = tocdo + cap1[10];
+                 }
+             }
+         }
+     }*/
+    ////////////////////////////////////////
+
+
+
+
+   //////////////////////////////////////
+    int i;
+    for (i = 0; i < 5; i++)
+    {
+        if ((sensor1[i] == 1) && (sensor1[i + 1] == 0) && (sensor1[i + 2] == 1))
+        {
+            invalid = 9;
+        }
+    }
+
+    if (senso == 0  )
+
+    {
+        if (++noline_counter == NOLINE_TIMEOUT)
+        {
+            stop1();
+            loi2 = 10;
+            noline_counter = 0;
+        }
+    }
+    else if (invalid >= 3)
+    {
+        stop1();
+        loi2 = 11;
+    }
+    else
+    {
+        noline_counter = 0;
+        loi2 = 0;
+        // UARTprintf( "\ntrai: %d phai: %d  \n", trai, phai);
+        //MotorController(phai, trai );
+//           if(trai1 < trai){
+//               trai1 ++;
+//           }else{
+//               if(trai1 > trai){
+//                   trai1 --;
+//
+//               }
+//               else{
+//                   trai1 = trai;
+//               }
+//           }
+//           if(phai1 < phai){
+//                     phai1 ++;
+//                 }else{
+//                     if(phai1 > phai){
+//                         phai1 --;
+//
+//                     }
+//                     else{
+//                         phai1 = phai;
+//                     }
+//                 }
+
+
+
+
+        MotorController(trai, phai);
+        //  UARTprintf("\n trai: %d  phai %d", phai , trai);
     }
 }
