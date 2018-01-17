@@ -137,8 +137,8 @@ int s1, s2, s3;
 //                0   1   2   3   4   5   6    7
 //int32_t cap[8] = { 4500, 100, 200, 250, 390, 520, 690, 700 };
 //int32_t cap[8] = { 5000, 200, 500, 1000, 1800, 2900, 3300, 4000 };
-int32_t cap[8] = { 6000, 500, 1100, 1700, 2300, 3200, 4300, 5500 };
-int32_t cap1[11] = { 6000, 300, 800, 1100, 1500, 1800, 2300, 3200, 3200, 4300, 5500 };
+int32_t cap[8] = { 6000, 600, 1300, 2300, 3900, 4500, 5500, 6500 };
+int32_t cap1[11] = { 6000, 450, 1000, 1700, 2700, 4000, 5400, 5500, 5500, 5500, 5500 };
 //int32_t cap1[8] = { 4000, 300, 700, 1300, 2000, 2800, 4000, 5200 };
 void runsenso2(void);
 void runsenso1(void);
@@ -523,6 +523,7 @@ void Timer1IntHandler(void)
         //   UARTprintf("RFID ID%s\n", RFID_ID);
         if (
           (strcmp(RFID_ID, ":E699C05") == 0) ||
+          (strcmp(RFID_ID, ":FE19D72") == 0) ||
           (strcmp(RFID_ID, ":650C935") == 0))
         {
             UARTprintf("da toi tram 1\n");
@@ -539,6 +540,41 @@ void Timer1IntHandler(void)
             bientantoc = 9000;
         }
         else if (
+                (strcmp(RFID_ID, ":89AAD62") == 0))
+        {
+            UARTprintf("da toi tram 3\n");
+            ROBOTTX_Buffer[0] = 3;
+            tram0 = 3;
+            bientantoc = 9000;
+        }
+        else if (
+                (strcmp(RFID_ID, ":4974D72") == 0))
+        {
+            UARTprintf("da toi tram 4\n");
+            ROBOTTX_Buffer[0] = 4;
+            tram0 = 4;
+            bientantoc = 9000;
+        }
+        else if (
+                (strcmp(RFID_ID, ":2DB4D62") == 0) ||
+				(strcmp(RFID_ID, ":8053BF5") == 0)
+				)
+        {
+            UARTprintf("da toi tram 5\n");
+            ROBOTTX_Buffer[0] = 5;
+            tram0 = 5;
+            bientantoc = 9000;
+        }
+        else if (
+                (strcmp(RFID_ID, ":0398D62") == 0))
+        {
+            UARTprintf("da toi tram 6\n");
+            ROBOTTX_Buffer[0] = 6;
+            tram0 = 6;
+            bientantoc = 9000;
+        }
+
+        else if (
                 (strcmp(RFID_ID, ":C41EBE0") == 0) ||
                 (strcmp(RFID_ID, ":32AAB12") == 0) ||
                 (strcmp(RFID_ID, ":11B3D62") == 0)
@@ -550,33 +586,22 @@ void Timer1IntHandler(void)
             bientantoc = 4000;
         }
         else if (
-                (strcmp(RFID_ID, ":C42A510") == 0) ||
-                (strcmp(RFID_ID, ":98D8925") == 0) ||
-                (strcmp(RFID_ID, ":A473D72") == 0)
-                )
-        {
-            UARTprintf("da toi tram 4\n");
-            ROBOTTX_Buffer[0] = 15;
-            tram0 = 15;
-            bientram4 = 1;
-            //bientantoc = 4000;
-        }
-        else if (
-                (strcmp(RFID_ID, ":8053BF5") == 0)
-                )
-        {
-            UARTprintf("da toi tram 5\n");
-            ROBOTTX_Buffer[0] = 5;
-            tram0 = 5;
-            //bientantoc = 9000;
-        }
-        else if (
-                (strcmp(RFID_ID, ":196CE45") == 0)
-                )
+                (strcmp(RFID_ID, ":EC72D72") == 0) ||
+            	(strcmp(RFID_ID, ":196CE45") == 0)
+				)
         {
             UARTprintf("da toi tram 8\n");
             ROBOTTX_Buffer[0] = 8;
             tram0 = 8;
+            bientantoc = 9000;
+        }
+        else if (
+                (strcmp(RFID_ID, ":CC66D62") == 0)
+                )
+        {
+            UARTprintf("da toi tram 9\n");
+            ROBOTTX_Buffer[0] = 9;
+            tram0 = 9;
             //bientantoc = 9000;
         }
         else if (
@@ -598,6 +623,25 @@ void Timer1IntHandler(void)
             //bientantoc = 9000;
         }
         else if (
+                (strcmp(RFID_ID, ":2D73DD2") == 0)
+                )
+        {
+            UARTprintf("da toi tram 12\n");
+            ROBOTTX_Buffer[0] = 12;
+            tram0 = 12;
+            //bientantoc = 9000;
+        }
+        else if (
+                (strcmp(RFID_ID, ":6096D62") == 0)
+                )
+        {
+            UARTprintf("da toi tram 13\n");
+            ROBOTTX_Buffer[0] = 13;
+            tram0 = 13;
+            //bientantoc = 9000;
+        }
+
+        else if (
                 (strcmp(RFID_ID, ":42DCC05") == 0)
                 )
         {
@@ -607,10 +651,25 @@ void Timer1IntHandler(void)
             //bientantoc = 9000;
         }
         else if (
+                (strcmp(RFID_ID, ":C42A510") == 0) ||
+                (strcmp(RFID_ID, ":98D8925") == 0) ||
+                (strcmp(RFID_ID, ":A473D72") == 0)
+                )
+        {
+            UARTprintf("da toi tram 15\n");
+            ROBOTTX_Buffer[0] = 15;
+            tram0 = 15;
+            bientram4 = 1;
+            //bientantoc = 4000;
+        }
+
+        else if (
                 (strcmp(RFID_ID, ":7170BC2") == 0) ||
                 (strcmp(RFID_ID, ":F3E0BA2") == 0) ||
                 (strcmp(RFID_ID, ":EB84BB2") == 0) ||
                 (strcmp(RFID_ID, ":8C34D72") == 0) ||
+                (strcmp(RFID_ID, ":D420D72") == 0) ||
+                (strcmp(RFID_ID, ":4BB3D62") == 0) ||
                 (strcmp(RFID_ID, ":4C21D72") == 0)
                 )
         {
@@ -667,6 +726,12 @@ void Timer1IntHandler(void)
             boqua = 1;
         }
 //////////////////////////////////////////////////////////////////////
+        else if (
+        		(strcmp(RFID_ID, ":52FDD72") == 0)
+				)
+        {
+        	bientantoc = 3000;
+        }
         else
         {
             UARTprintf("ERROR: Unknown RFID %s ????\n", RFID_ID);
@@ -754,6 +819,140 @@ void Timer3IntHandler(void)
                 ht_tram1 = 1;
                 UARTprintf("di tram 5\n");
             }
+
+            if (ROBOTRX_Buffer[0] == 6 && tram1 != 6)
+            {
+                tram1 = 6;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 5\n");
+            }
+
+            if (ROBOTRX_Buffer[0] == 7 && tram1 != 7)
+            {
+                tram1 = 7;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 5\n");
+            }
+
+            if (ROBOTRX_Buffer[0] == 8 && tram1 != 8)
+            {
+                tram1 = 8;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 5\n");
+            }
+
+            if (ROBOTRX_Buffer[0] == 9 && tram1 != 9)
+            {
+                tram1 = 9;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 5\n");
+            }
+
+            if (ROBOTRX_Buffer[0] == 10 && tram1 != 10)
+            {
+                tram1 = 10;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 5\n");
+            }
+
+            if (ROBOTRX_Buffer[0] == 11 && tram1 != 11)
+            {
+                tram1 = 11;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 5\n");
+            }
+
+            if (ROBOTRX_Buffer[0] == 12 && tram1 != 12)
+            {
+                tram1 = 12;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 5\n");
+            }
+
+            if (ROBOTRX_Buffer[0] == 13 && tram1 != 13)
+            {
+                tram1 = 13;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 5\n");
+            }
+
+            if (ROBOTRX_Buffer[0] == 14 && tram1 != 14)
+            {
+                tram1 = 14;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 5\n");
+            }
+
+            if (ROBOTRX_Buffer[0] == 15 && tram1 != 15)
+            {
+                tram1 = 15;
+                //	tram0 = 0;
+                if (ROBOT_STATE == 1)
+                {
+                    dung = 1;
+                }
+                loi = 0;
+                ht_tram1 = 1;
+                UARTprintf("di tram 5\n");
+            }
+
+
+
+
         }
     }
     else
@@ -1289,7 +1488,7 @@ void runsenso2(void)
             noline_counter = 0;
         }
     }
-    else if (invalid >= 3)
+    else if (invalid >= 3 && (boqua == 1))
     {
         stop1();
         loi2 = 11;
@@ -1719,7 +1918,7 @@ void runsenso1(void)
             noline_counter = 0;
         }
     }
-    else if (invalid >= 3)
+    else if ((invalid >= 3) )
     {
         stop1();
         loi2 = 11;
