@@ -1055,31 +1055,61 @@ void UART0IntHandler(void)
     {
         switch (UARTCharGet(UART0_BASE))
         {
-        case 'a':
-
-            break;
-        case 'd':
-
-            break;
-        case 'w':
-
-            break;
-        case 's':
-
-            break;
         case '1':
+            memcpy(RFID_ID, ":E699C05", 9);
+
             break;
         case '2':
+            memcpy(RFID_ID, ":87CABE5", 9);
+
             break;
         case '3':
+            memcpy(RFID_ID, ":89AAD62", 9);
+
             break;
         case '4':
+            memcpy(RFID_ID, ":4974D72", 9);
+
             break;
         case '5':
+            memcpy(RFID_ID, ":2DB4D62", 9);
+            break;
+        case '6':
+            memcpy(RFID_ID, ":0398D62", 9);
+            break;
+        case '7':
+            memcpy(RFID_ID, ":C41EBE0", 9);
+            break;
+        case '8':
+            memcpy(RFID_ID, ":EC72D72", 9);
             break;
         case '9':
+            memcpy(RFID_ID, ":CEA1D82", 9);
+
             break;
-        case '0':
+        case ')':
+            memcpy(RFID_ID, ":E5A6D62", 9);
+
+            break;
+        case '!':
+            memcpy(RFID_ID, ":D53AD62", 9);
+
+            break;
+        case '@':
+            memcpy(RFID_ID, ":2D73DD2", 9);
+
+            break;
+        case '#':
+            memcpy(RFID_ID, ":6096D62", 9);
+
+            break;
+        case '$':
+            memcpy(RFID_ID, ":42DCC05", 9);
+
+            break;
+        case '%':
+            memcpy(RFID_ID, ":C42A510", 9);
+
             break;
         default:
             UARTprintf("Unknow\n");
