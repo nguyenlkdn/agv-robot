@@ -41,6 +41,7 @@
 #include "driverlib/uart.h"
 #include "driverlib/pwm.h"
 #include "driverlib/adc.h"
+#include "driverlib/qei.h"
 #include "driverlib/systick.h"
 #include "utils/uartstdio.h"
 #include "utils/cpu_usage.h"
@@ -206,6 +207,7 @@ void main(void)
     while (1)
     {
         ROM_IntMasterDisable();
+        //UARTprintf("QEI Value: %d\n", QEIPositionGet(QEI0_BASE));
         //////////////////////////////////////////////////////
         if (binh == 1)
         {
@@ -264,7 +266,8 @@ void main(void)
                     break;
 
                 case 0:
-                    GLCDPrintfNormal(0, 5, "Error       : NONE          ");
+                    //GLCDPrintfNormal(0, 5, "Error       : NONE          ");
+                    GLCDPrintfNormal(0, 5, "Encoder       : %6d   ", QEIPositionGet(QEI0_BASE));
                     break;
                 }
                 loi1 = loi;
@@ -285,6 +288,7 @@ void main(void)
         //if (hienthi == 1) {
         if (1)
         {
+
             GLCDPrintfNormal(0, 4, "RFID        : %s", RFID_ID);
 
             hienthi = 0;
@@ -324,7 +328,7 @@ void main(void)
         if (ROBOTRX_Buffer[1] == 1 && nan_ha == 0)
         {
             nan_ha = 1;
-            GLCDPrintfNormal(0, 4, "The Carrier INCREASED !!!");
+            //GLCDPrintfNormal(0, 4, "The Carrier INCREASED !!!");
             GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
             GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, 0);
         }
@@ -332,7 +336,7 @@ void main(void)
         if (ROBOTRX_Buffer[1] == 0 && nan_ha == 1)
         {
             nan_ha = 0;
-            GLCDPrintfNormal(0, 4, "                         ");
+            //GLCDPrintfNormal(0, 4, "                         ");
             GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
             GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_PIN_4);
         }

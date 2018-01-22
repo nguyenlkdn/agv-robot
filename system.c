@@ -25,6 +25,7 @@
 #include "driverlib/systick.h"
 #include "utils/uartstdio.h"
 #include "driverlib/pwm.h"
+#include "driverlib/qei.h"
 #include "driverlib/udma.h"
 #include "utils/cpu_usage.h"
 #include "config.h"
@@ -71,7 +72,7 @@ void init(void){
     cfg_interrupt();
     cfg_systick();
     cfg_dma();
-
+    cfg_qei();
     //
     // Initialize the CPU usage measurement routine.
     //
@@ -347,6 +348,73 @@ void cfg_interrupt(void){
 //  IntEnable(INT_GPIOC);
 //  GPIOIntClear(GPIO_PORTC_BASE, GPIO_PIN_5);
 }
+
+void cfg_qei(void){
+    //Set Pins to be PHA0 and PHB0 and Index
+    GPIOPinConfigure(GPIO_PL2_PHB0);
+    GPIOPinConfigure(GPIO_PL1_PHA0);
+    GPIOPinTypeQEI(GPIO_PORTL_BASE, GPIO_PIN_1 | GPIO_PIN_2);
+
+//  GPIOPinConfigure(GPIO_PC5_PHA1);
+//  GPIOPinConfigure(GPIO_PC6_PHB1);
+//  GPIOPinTypeQEI(GPIO_PORTC_BASE, GPIO_PIN_5 | GPIO_PIN_6);
+
+    //DISable peripheral and int before configuration
+    QEIDisable(QEI0_BASE);
+//  QEIVelocityConfigure(QEI0_BASE, QEI_VELDIV_1, SysCtlClockGet()/20);
+//  QEIVelocityEnable(QEI0_BASE);
+
+//    QEIDisable(QEI1_BASE);
+//  QEIVelocityConfigure(QEI1_BASE, QEI_VELDIV_1, SysCtlClockGet()/20);
+//  QEIVelocityEnable(QEI1_BASE);
+    // Configure quadrature encoder, use an arbitrary top limit of 1000
+    QEIConfigure(QEI0_BASE, (QEI_CONFIG_CAPTURE_A_B  | QEI_CONFIG_NO_RESET | QEI_CONFIG_QUADRATURE | QEI_CONFIG_NO_SWAP), 0xffffffff);
+    QEIPositionSet(QEI0_BASE, 0);
+
+//  QEIConfigure(QEI1_BASE, (QEI_CONFIG_CAPTURE_A_B  | QEI_CONFIG_NO_RESET | QEI_CONFIG_QUADRATURE | QEI_CONFIG_NO_SWAP), 0xffffffff);
+//  QEIPositionSet(QEI1_BASE, 0);
+    // Enable the quadrature encoder.
+    QEIEnable(QEI0_BASE);
+//  QEIEnable(QEI1_BASE);
+
+    // Enable QEI Peripherals
+//       ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOL); //PL1; PL2
+//       ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_QEI0);
+//
+//
+//       //Set Pins to be PHA0 and PHB0
+//       ROM_GPIOPinConfigure(GPIO_PL1_PHA0);
+//       ROM_GPIOPinConfigure(GPIO_PL2_PHB0);
+//
+////       GPIOPadConfigSet(GPIO_PORTL_BASE, GPIO_PIN_1 | GPIO_PIN_2,
+////               GPIO_STRENGTH_12MA, GPIO_PIN_TYPE_STD_WPU);
+////
+////       GPIOPinWrite(GPIO_PORTL_BASE, GPIO_PIN_1 | GPIO_PIN_2, GPIO_PIN_1 | GPIO_PIN_2);
+//       //Set GPIO pins for QEI.
+//       ROM_GPIOPinTypeQEI(GPIO_PORTL_BASE, GPIO_PIN_1 |  GPIO_PIN_2);
+//
+//
+//       //DISable peripheral and int before configuration
+//       ROM_QEIDisable(QEI0_BASE);
+//       ROM_QEIIntDisable(QEI0_BASE, QEI_INTERROR | QEI_INTDIR | QEI_INTTIMER | QEI_INTINDEX);
+//
+//
+//       // Configure quadrature encoder, use an arbitrary top limit of 2000
+//       ROM_QEIConfigure(QEI0_BASE, (QEI_CONFIG_CAPTURE_A_B  | QEI_CONFIG_NO_RESET  | QEI_CONFIG_QUADRATURE | QEI_CONFIG_NO_SWAP), 479);//QEI_CONFIG_CLOCK_DIR
+//
+//
+//       // Enable the quadrature encoder.
+//       ROM_QEIEnable(QEI0_BASE);
+//
+//
+//       //Set position to a middle value so we can see if things are working
+//       ROM_QEIPositionSet(QEI0_BASE, 0);
+//
+//
+//       //ROM_QEIVelocityConfigure(QEI0_BASE, QEI_VELDIV_1, 120000000); //1000ms measure time
+//       //ROM_QEIVelocityEnable(QEI0_BASE);
+}
+
 void cfg_inout(void) {
     // ERROR MAPPING
     ROM_GPIOPinTypeGPIOInput(ERRORPORT, FRTSEN | FWDSEN);
@@ -477,6 +545,7 @@ void cfg_peripheral(void){
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER4);
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER5);
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_QEI0);
 
     g_bFeedWatchdog = true;
 }
