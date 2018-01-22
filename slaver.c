@@ -98,8 +98,8 @@ uint8_t senso2 = 0;
 int8_t xa = 0;
 int32_t phai = 0;
 int32_t trai = 0;
-int32_t phai1 = 0;
-int32_t trai1 = 0;
+int32_t phai1 = 9000;
+int32_t trai1 = 9000;
 int den = 0;
 int chieu = 1;
 int loi = 0;
@@ -137,11 +137,12 @@ int s1, s2, s3;
 //                0   1   2   3   4   5   6    7
 //int32_t cap[8] = { 4500, 100, 200, 250, 390, 520, 690, 700 };
 //int32_t cap[8] = { 5000, 200, 500, 1000, 1800, 2900, 3300, 4000 };
-int32_t cap[8] = { 6000, 600, 1300, 2300, 3900, 4500, 5500, 6500 };
+int32_t cap[8] = { 6000, 400, 1000, 1700, 2700, 4500, 5500, 6500 };
 int32_t cap1[11] = { 6000, 450, 1000, 1700, 2700, 4000, 5400, 5500, 5500, 5500, 5500 };
 //int32_t cap1[8] = { 4000, 300, 700, 1300, 2000, 2800, 4000, 5200 };
 void runsenso2(void);
 void runsenso1(void);
+void runsenso3(void);
 void stop1(void);
 void dithang(void);
 
@@ -525,8 +526,8 @@ void Timer1IntHandler(void)
             bientantoc = 9000;
         }
         else if (
-                (strcmp(RFID_ID, ":87CABE5") == 0) ||
-                (strcmp(RFID_ID, ":C68CD02") == 0)
+               // (strcmp(RFID_ID, ":87CABE5") == 0) ||
+                (strcmp(RFID_ID, ":1141D62") == 0)
                 )
         {
             UARTprintf("da toi tram 2\n");
@@ -535,8 +536,8 @@ void Timer1IntHandler(void)
             bientantoc = 9000;
         }
         else if (
-                (strcmp(RFID_ID, ":89AAD62") == 0) ||
-                (strcmp(RFID_ID, ":74B5D82") == 0)
+               // (strcmp(RFID_ID, ":89AAD62") == 0) ||
+                (strcmp(RFID_ID, ":0A8DD72") == 0)
                 )
         {
             UARTprintf("da toi tram 3\n");
@@ -637,8 +638,8 @@ void Timer1IntHandler(void)
             bientantoc = 9000;
         }
         else if (
-                (strcmp(RFID_ID, ":6096D62") == 0) ||
-                (strcmp(RFID_ID, ":A92FD82") == 0)
+              //  (strcmp(RFID_ID, ":6096D62") == 0) ||
+                (strcmp(RFID_ID, ":7702D82") == 0)
                 )
         {
             UARTprintf("da toi tram 13\n");
@@ -1380,8 +1381,7 @@ void runsenso2(void)
         noline_counter = 0;
         loi2 = 0;
         MotorController(trai, phai);
-        phai1 = phai;
-        trai1 = trai;
+
     }
 }
 /////////////////////////////////////////////////////chay nhanh//////////////////////////////
@@ -1591,7 +1591,160 @@ void runsenso1(void)
         MotorController(trai, phai);
     }
 }
+//////////////////////////////////////////////////////// CHAY NHANH 3
 
+
+
+void runsenso3(void)
+{
+
+
+    if (tocdo > bientantoc)
+    {
+
+        tocdo = tocdo - 300;
+
+    }
+    senso = GPIOPinRead(GPIO_PORTM_BASE, 0xff);
+
+
+
+    switch (senso) {
+	case 00011000:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+
+		phai = tocdo;
+		trai = tocdo;
+		break;
+	case 00010000:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo + cap1[1];
+		trai = tocdo - cap1[1];
+
+		break;
+	case 00110000:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo + cap1[2];
+		trai = tocdo - cap1[2];
+
+		break;
+	case 00100000:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo + cap1[3];
+		trai = tocdo - cap1[3];
+
+		break;
+	case 01100000:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo + cap1[4];
+		trai = tocdo - cap1[4];
+
+		break;
+	case 01000000:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo + cap1[5];
+		trai = tocdo - cap1[5];
+
+		break;
+	case 11000000:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo + cap1[6];
+		trai = tocdo - cap1[6];
+
+		break;
+	case 10000000:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo + cap1[7];
+		trai = tocdo - cap1[7];
+
+		break;
+	case 00001000:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo - cap1[1];
+		trai = tocdo + cap1[1];
+		break;
+	case 00001100:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo - cap1[2];
+		trai = tocdo + cap1[2];
+		break;
+	case 00000100:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo - cap1[3];
+		trai = tocdo + cap1[3];
+		break;
+	case 00000110:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo - cap1[4];
+		trai = tocdo + cap1[4];
+		break;
+	case 00000010:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo - cap1[5];
+		trai = tocdo + cap1[5];
+		break;
+	case 00000011:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo - cap1[6];
+		trai = tocdo + cap1[6];
+		break;
+	case 00000001:
+		tocdo = tocdo + tocdotan;
+		biengiamtoc = tocdo;
+		phai = tocdo - cap1[7];
+		trai = tocdo + cap1[7];
+		break;
+	}
+
+
+    ////////////////////////////////////////
+
+
+
+    if (senso == 0 && ((senso2 & 0x04)>>2) == 0 )
+
+    {
+        if (++noline_counter == NOLINE_TIMEOUT)
+        {
+            stop1();
+            loi2 = 10;
+            noline_counter = 0;
+        }
+    }
+    else
+    {
+        noline_counter = 0;
+        loi2 = 0;
+
+//        if(trai > trai1){
+//        	trai1 = trai1 + 2;
+//        }else{
+//        	trai1 = trai;
+//        }
+//        if(phai > phai1){
+//        	phai1 = phai1 + 2;
+//        }else{
+//        	phai1 = phai;
+//        }
+
+
+        MotorController(phai, trai);
+    }
+}
 // Vector Rx/Tx UART2 from RFID
 void UART1IntHandler(void)
 {
