@@ -109,6 +109,7 @@ int loi2 = 0;
 int loi10 = 1;
 int dung = 0;
 int di = 0;
+int xoy = 0;
 int hienthi = 1;
 int nan_ha = 0;
 int tram0 = 0;
@@ -123,6 +124,7 @@ uint32_t tocdo = 900; // toc do robot max 600
 uint32_t biengiamtoc = 3; // gia tri giam toc
 //uint32_t bientantoc = 5000;  // gia tri tan toc
 uint32_t bientantoc = 0;
+uint32_t hienthi_en = 0;
 uint32_t tocdogiam = 300;   // tang giam thoi gian cham dan
 uint8_t tocdotan = 10;    // tang giam thoi gian nhah dan
 int i;
@@ -140,13 +142,14 @@ int s1, s2, s3;
 //int32_t cap[8] = { 5000, 200, 500, 1000, 1800, 2900, 3300, 4000 };
 int32_t cap[8] = { 6000, 400, 1000, 1700, 2700, 4500, 5500, 6500 };
 int32_t cap1[11] = { 6000, 450, 1000, 1700, 2700, 4000, 5400, 5500, 5500, 5500, 5500 };
+uint32_t enc[16] = { 1, 11000000, 755546, 1080248, 1404142, 178821,2097250, 2418966, 3538359,3841919, 4259864, 4694434, 5030065, 5306035, 5500000, 8265470};
 //int32_t cap1[8] = { 4000, 300, 700, 1300, 2000, 2800, 4000, 5200 };
 void runsenso2(void);
 void runsenso1(void);
 void runsenso3(void);
 void stop1(void);
 void dithang(void);
-
+void enc_proc();
 uint16_t data[10];
 
 int8_t zigbeesentpackage[BUFFER_SIZE];
@@ -166,11 +169,15 @@ uint32_t adcvalue[12];
 uint32_t robotstatus = 0;
 uint32_t debound1 = 0;
 uint32_t debound2 = 0;
+uint32_t duong_di = 0;
+
 //////////////reset  khi treo////////////////////////
 //ROM_WatchdogEnable(WATCHDOG0_BASE);
 
 /////////////////////////////////////////////
 void main(void)
+
+
 {
     init();
     ROM_IntMasterDisable();
@@ -232,8 +239,41 @@ void main(void)
                          (senso2 & 0x02) >> 1, (senso2 & 0x04) >> 2,
                          (senso2 & 0x08) >> 3);
 
-        GLCDPrintfNormal(0, 2, "Motor Speed : %3d %%, %3d %%", rightm / 240,
-                         leftm / 240);
+//        GLCDPrintfNormal(0, 2, "Motor Speed : %3d %%, %3d %%", rightm / 240,
+//                         leftm / 240);
+
+        GLCDPrintfNormal(0, 2, "Encoder : %3d , %3d %%, ", duong_di , hienthi_en);
+        if ((sensor1[2] == 1) && (sensor1[3] == 1) && (sensor1[4] == 1) && (sensor1[5] == 1) ||
+        	(sensor1[3] == 1) && (sensor1[4] == 1) && (sensor1[5] == 1) && (sensor1[6] == 1) ||
+			(sensor1[1] == 1) && (sensor1[3] == 1) && (sensor1[4] == 1) && (sensor1[6] == 1) ||
+			(sensor1[1] == 1) && (sensor1[6] == 1)  ||
+			(sensor1[1] == 1) && (sensor1[7] == 1)  ||
+			(sensor1[0] == 1) && (sensor1[7] == 1)  ||
+			(sensor1[0] == 1) && (sensor1[6] == 1)
+        )
+        {
+        	xoy = 1;
+            QEIPositionSet(QEI0_BASE, 0);
+            ROBOTTX_Buffer[0] = 1;
+
+                 tram0 = 1;
+
+        }
+        if(xoy == 1){
+
+        	duong_di = QEIPositionGet(QEI0_BASE);
+            enc_proc();
+        }
+
+
+        if (ROBOTRX_Buffer[0] == 15 && tram0 == 15)
+        {
+        	//GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0);
+        }
+        else
+        {
+        	//GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_PIN_1);
+        }
         ///////////////////////////////////////////////////
         if (loi2 == 0)
         {
@@ -266,8 +306,7 @@ void main(void)
                     break;
 
                 case 0:
-                    //GLCDPrintfNormal(0, 5, "Error       : NONE          ");
-                    GLCDPrintfNormal(0, 5, "Encoder       : %6d   ", QEIPositionGet(QEI0_BASE));
+                    GLCDPrintfNormal(0, 5, "Error       : NONE          ");
                     break;
                 }
                 loi1 = loi;
@@ -376,6 +415,98 @@ void main(void)
 // System Interupt Handler
 //
 //*****************************************************************************
+void enc_proc(void) {
+
+	if( ((duong_di > 2863397) && (duong_di < 3093962) ) || ((duong_di > 9805545) && (duong_di < 10108428 )) ) {               // tatws cam bien
+		bientantoc = 4000;
+        boqua = 0;
+	}else {
+		if (((duong_di > 2535580) && ( duong_di < 3412116)) || ((duong_di > 6357780) && (duong_di < 7145930 )) ||  ((duong_di > 7948819) && (duong_di < 8832465) ) || ((duong_di > 10390370) && (duong_di < 10636685) ) || (duong_di > 10902620 )){              // chay cham
+			bientantoc = 4000;
+		}else {
+			bientantoc = 9000;
+		}
+	}
+
+
+if (duong_di >= enc[1] - ENC_SS) {
+        UARTprintf("da toi tram 1\n");
+        ROBOTTX_Buffer[0] = 1;
+        QEIPositionSet(QEI0_BASE, 0);
+        tram0 = 1;
+	} else if ((duong_di >= enc[2] - ENC_SS)
+			&& (duong_di <= enc[2] + ENC_SS)) {
+        UARTprintf("da toi tram 2\n");
+        ROBOTTX_Buffer[0] = 2;
+        tram0 = 2;
+	} else if ((duong_di >= enc[3] - ENC_SS)
+			&& (duong_di <= enc[3] + ENC_SS)) {
+        UARTprintf("da toi tram 3\n");
+        ROBOTTX_Buffer[0] = 3;
+        tram0 = 3;
+	} else if ((duong_di >= enc[4] - ENC_SS)
+			&& (duong_di <= enc[4] + ENC_SS)) {
+        UARTprintf("da toi tram 4\n");
+        ROBOTTX_Buffer[0] = 4;
+        tram0 = 4;
+	} else if ((duong_di >= enc[5] - ENC_SS)
+			&& (duong_di <= enc[5] + ENC_SS)) {
+        UARTprintf("da toi tram 5\n");
+        ROBOTTX_Buffer[0] = 5;
+        tram0 = 5;
+	} else if ((duong_di >= enc[6] - ENC_SS)
+			&& (duong_di <= enc[6] + ENC_SS)) {
+        UARTprintf("da toi tram 6\n");
+        ROBOTTX_Buffer[0] = 6;
+        tram0 = 6;
+	} else if ((duong_di >= enc[7] - ENC_SS)
+			&& (duong_di <= enc[7] + ENC_SS)) {
+        UARTprintf("da toi tram 7\n");
+        ROBOTTX_Buffer[0] = 7;
+        tram0 = 7;
+	} else if ((duong_di >= enc[8] - ENC_SS)
+			&& (duong_di <= enc[8] + ENC_SS)) {
+        UARTprintf("da toi tram 8\n");
+        ROBOTTX_Buffer[0] = 8;
+        tram0 = 8;
+	} else if ((duong_di >= enc[9] - ENC_SS)
+			&& (duong_di <= enc[9] + ENC_SS)) {
+        UARTprintf("da toi tram 9\n");
+        ROBOTTX_Buffer[0] = 9;
+        tram0 = 9;
+	} else if ((duong_di >= enc[10] - ENC_SS)
+			&& (duong_di <= enc[10] + ENC_SS)) {
+        UARTprintf("da toi tram 10\n");
+        ROBOTTX_Buffer[0] = 10;
+        tram0 = 10;
+	} else if ((duong_di >= enc[11] - ENC_SS)
+			&& (duong_di <= enc[11] + ENC_SS)) {
+        UARTprintf("da toi tram 11\n");
+        ROBOTTX_Buffer[0] = 11;
+        tram0 = 11;
+	} else if ((duong_di >= enc[12] - ENC_SS)
+			&& (duong_di <= enc[12] + ENC_SS)) {
+        UARTprintf("da toi tram 12\n");
+        ROBOTTX_Buffer[0] = 12;
+        tram0 = 12;
+	} else if ((duong_di >= enc[13] - ENC_SS)
+			&& (duong_di <= enc[13] + ENC_SS)) {
+        UARTprintf("da toi tram 13\n");
+        ROBOTTX_Buffer[0] = 13;
+        tram0 = 13;
+	} else if ((duong_di >= enc[14] - ENC_SS)
+			&& (duong_di <= enc[14] + ENC_SS)) {
+        UARTprintf("da toi tram 1\n");
+        ROBOTTX_Buffer[0] = 14;
+        tram0 = 14;
+	} else if ((duong_di >= enc[15] - ENC_SS)
+			&& (duong_di <= enc[15] + ENC_SS)) {
+        UARTprintf("da toi tram 1\n");
+        ROBOTTX_Buffer[0] = 15;
+        tram0 = 15;
+	}
+
+}
 
 void PORTJIntHandler(void)
 {
@@ -518,26 +649,177 @@ void Timer1IntHandler(void)
     if (RFID_ID[0] == ':')
     {
         binh = 1;
+
+		if ((strcmp(RFID_ID, ":EA31D72") == 0)) {
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 2531828);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":FE19D72") == 0)) {
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 45000);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":E699C05") == 0)) {
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 109232);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":650C935") == 0)) {
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 81638);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":4C21D72") == 0)) { //(strcmp(RFID_ID, ":4C21D72") == 0)  cam bien tac cam bien
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 2834691);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":A82FC75") == 0)) { //(strcmp(RFID_ID, ":50E7925") == 0) ||
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 3086723);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":DC6EDE2") == 0)) { //  (strcmp(RFID_ID, ":DC6EDE2") == 0) ||
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 3336779);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":196CE45") == 0)) { //(strcmp(RFID_ID, ":196CE45") == 0)
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 3536216);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":CEA1D82") == 0)) { // (strcmp(RFID_ID, ":CEA1D82") == 0) ||
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 3765946);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":7702D82") == 0)) { //(strcmp(RFID_ID, ":7702D82") == 0)
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 5282828);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":99C8BB2") == 0)) { // (strcmp(RFID_ID, ":99C8BB2") == 0) ||
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 6343181);
+				xoy = 1;
+			}
+		}
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		if ((strcmp(RFID_ID, ":0067B22") == 0)) {
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 6891701);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":50E7925") == 0)) {
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+			//	QEIPositionSet(QEI0_BASE, 7919414);
+			//	xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":98D8925") == 0)) {
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 8264085);
+				xoy = 1;
+			}
+		}
+		if ((strcmp(RFID_ID, ":52FDD72") == 0)) {
+			hienthi_en = QEIPositionGet(QEI0_BASE);
+			if (xoy != 1) {
+				QEIPositionSet(QEI0_BASE, 8600230);
+				xoy = 1;
+			}
+		}
+		///////////////////////////////////////////////////////////////////////222222222222222222
+		if ((strcmp(RFID_ID, ":B40D935") == 0)) {
+				hienthi_en = QEIPositionGet(QEI0_BASE);
+				if (xoy != 1) {
+					QEIPositionSet(QEI0_BASE, 8812808);
+					xoy = 1;
+				}
+			}
+			if ((strcmp(RFID_ID, ":EB84BB2") == 0)) {
+				hienthi_en = QEIPositionGet(QEI0_BASE);
+				if (xoy != 1) {
+					QEIPositionSet(QEI0_BASE, 9811534);
+					xoy = 1;
+				}
+			}
+			if ((strcmp(RFID_ID, ":C779D62") == 0)) {
+				hienthi_en = QEIPositionGet(QEI0_BASE);
+				if (xoy != 1) {
+//					QEIPositionSet(QEI0_BASE, 10063919);
+//					xoy = 1;
+				}
+			}
+			if ((strcmp(RFID_ID, ":D225D72") == 0)) {
+				hienthi_en = QEIPositionGet(QEI0_BASE);
+				if (xoy != 1) {
+					QEIPositionSet(QEI0_BASE, 10404989);
+					xoy = 1;
+				}
+			}
+
+
+
+
+
         //   UARTprintf("RFID ID%s\n", RFID_ID);
-        if (
-          (strcmp(RFID_ID, ":E699C05") == 0) ||
-          (strcmp(RFID_ID, ":FE19D72") == 0) ||
-          (strcmp(RFID_ID, ":650C935") == 0))
-        {
-            UARTprintf("da toi tram 1\n");
-            ROBOTTX_Buffer[0] = 1;
-            tram0 = 1;
-            bientantoc = 9000;
-        }
-        else if (
+//        if (
+//          (strcmp(RFID_ID, ":E699C05") == 0) ||
+//          (strcmp(RFID_ID, ":FE19D72") == 0) ||
+//          (strcmp(RFID_ID, ":650C935") == 0))
+//        { if(tram0 != 1) {
+//            UARTprintf("da toi tram 1\n");
+//            ROBOTTX_Buffer[0] = 1;
+//          //  tram0 = 1;
+//
+//            xoy = 1;
+//
+//       //
+//
+//
+//        }
+//
+//        }
+//        else
+        	if (
                // (strcmp(RFID_ID, ":87CABE5") == 0) ||
                 (strcmp(RFID_ID, ":1141D62") == 0)
                 )
         {
             UARTprintf("da toi tram 2\n");
             ROBOTTX_Buffer[0] = 2;
-            tram0 = 2;
+         //   tram0 = 2;
             bientantoc = 9000;
+        //   QEIPositionSet(QEI0_BASE, enc[2]);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         else if (
                // (strcmp(RFID_ID, ":89AAD62") == 0) ||
@@ -546,8 +828,10 @@ void Timer1IntHandler(void)
         {
             UARTprintf("da toi tram 3\n");
             ROBOTTX_Buffer[0] = 3;
-            tram0 = 3;
+           // tram0 = 3;
             bientantoc = 9000;
+         //   QEIPositionSet(QEI0_BASE, enc[3]);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         else if (
                 (strcmp(RFID_ID, ":4974D72") == 0) ||
@@ -556,8 +840,10 @@ void Timer1IntHandler(void)
         {
             UARTprintf("da toi tram 4\n");
             ROBOTTX_Buffer[0] = 4;
-            tram0 = 4;
+          //  tram0 = 4;
             bientantoc = 9000;
+         //   QEIPositionSet(QEI0_BASE, enc[4]);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         else if (
                 (strcmp(RFID_ID, ":2DB4D62") == 0) ||
@@ -566,50 +852,61 @@ void Timer1IntHandler(void)
         {
             UARTprintf("da toi tram 5\n");
             ROBOTTX_Buffer[0] = 5;
-            tram0 = 5;
+            //tram0 = 5;
             bientantoc = 9000;
+        //    QEIPositionSet(QEI0_BASE, enc[5]);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         else if (
-                (strcmp(RFID_ID, ":0398D62") == 0) ||
-                (strcmp(RFID_ID, ":76A4D82") == 0)
+                (strcmp(RFID_ID, ":0398D62") == 0)
+
                 )
         {
             UARTprintf("da toi tram 6\n");
             ROBOTTX_Buffer[0] = 6;
-            tram0 = 6;
+            //tram0 = 6;
             bientantoc = 9000;
+            QEIPositionSet(QEI0_BASE, 2186741);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
 
         else if (
-                (strcmp(RFID_ID, ":C41EBE0") == 0) ||
-                (strcmp(RFID_ID, ":32AAB12") == 0) ||
+
                 (strcmp(RFID_ID, ":11B3D62") == 0)
                 )
         {
             UARTprintf("da toi tram 7\n");
-            tram0 = 7;
+
+
+           // tram0 = 7;
             ROBOTTX_Buffer[0] = 7;
             bientantoc = 4000;
+            QEIPositionSet(QEI0_BASE,2248400);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         else if (
-                (strcmp(RFID_ID, ":EC72D72") == 0) ||
-            	(strcmp(RFID_ID, ":196CE45") == 0)
+                (strcmp(RFID_ID, ":EC72D72") == 0)
+
 				)
         {
             UARTprintf("da toi tram 8\n");
             ROBOTTX_Buffer[0] = 8;
-            tram0 = 8;
+           // tram0 = 8;
             bientantoc = 9000;
+       //     QEIPositionSet(QEI0_BASE, enc[8]);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         else if (
-                (strcmp(RFID_ID, ":CEA1D82") == 0) ||
+
                 (strcmp(RFID_ID, ":748BD82") == 0)
                 )
         {
             UARTprintf("da toi tram 9\n");
             ROBOTTX_Buffer[0] = 9;
-            tram0 = 9;
+           // tram0 = 9;
             bientantoc = 9000;
+        //    QEIPositionSet(QEI0_BASE, enc[9]);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         else if (
                 (strcmp(RFID_ID, ":E5A6D62") == 0) ||
@@ -618,8 +915,10 @@ void Timer1IntHandler(void)
         {
             UARTprintf("da toi tram 10\n");
             ROBOTTX_Buffer[0] = 10;
-            tram0 = 10;
+           // tram0 = 10;
             bientantoc = 9000;
+         //   QEIPositionSet(QEI0_BASE, enc[10]);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         else if (
                 (strcmp(RFID_ID, ":D53AD62") == 0) ||
@@ -628,8 +927,10 @@ void Timer1IntHandler(void)
         {
             UARTprintf("da toi tram 11\n");
             ROBOTTX_Buffer[0] = 11;
-            tram0 = 11;
+           // tram0 = 11;
             bientantoc = 9000;
+         //   QEIPositionSet(QEI0_BASE, enc[11]);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         else if (
                 (strcmp(RFID_ID, ":2D73DD2") == 0) ||
@@ -638,19 +939,24 @@ void Timer1IntHandler(void)
         {
             UARTprintf("da toi tram 12\n");
             ROBOTTX_Buffer[0] = 12;
-            tram0 = 12;
+           // tram0 = 12;
             bientantoc = 9000;
+         //   QEIPositionSet(QEI0_BASE, enc[12]);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
-        else if (
-              //  (strcmp(RFID_ID, ":6096D62") == 0) ||
-                (strcmp(RFID_ID, ":7702D82") == 0)
-                )
-        {
-            UARTprintf("da toi tram 13\n");
-            ROBOTTX_Buffer[0] = 13;
-            tram0 = 13;
-            bientantoc = 9000;
-        }
+//        else if (
+//              //  (strcmp(RFID_ID, ":6096D62") == 0) ||
+//
+//                )
+//        {
+//            UARTprintf("da toi tram 13\n");
+//            ROBOTTX_Buffer[0] = 13;
+//           // tram0 = 13;
+//            bientantoc = 9000;
+//           // QEIPositionSet(QEI0_BASE, enc[13]);
+//            dung = 0;
+//            ROBOT_STATE = 0;
+//        }
 
         else if (
                 (strcmp(RFID_ID, ":42DCC05") == 0) ||
@@ -659,36 +965,39 @@ void Timer1IntHandler(void)
         {
             UARTprintf("da toi tram 14\n");
             ROBOTTX_Buffer[0] = 14;
-            tram0 = 14;
+            //tram0 = 14;
             bientantoc = 9000;
+           // QEIPositionSet(QEI0_BASE, enc[14]);
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         else if (
                 (strcmp(RFID_ID, ":C42A510") == 0) ||
-                (strcmp(RFID_ID, ":98D8925") == 0) ||
+               // (strcmp(RFID_ID, ":98D8925") == 0) ||
                 (strcmp(RFID_ID, ":A473D72") == 0)
                 )
         {
             UARTprintf("da toi tram 15\n");
-            ROBOTTX_Buffer[0] = 15;
-            tram0 = 15;
-            bientram4 = 1;
-            bientantoc = 4000;
+          //  ROBOTTX_Buffer[0] = 15;
+            //tram0 = 15;
+            hienthi_en = QEIPositionGet(QEI0_BASE);
+          //  QEIPositionSet(QEI0_BASE, enc[15]);
+
         }
 
         else if (
                 (strcmp(RFID_ID, ":7170BC2") == 0) ||
                 (strcmp(RFID_ID, ":F3E0BA2") == 0) ||
-                (strcmp(RFID_ID, ":EB84BB2") == 0) ||
+              //  (strcmp(RFID_ID, ":EB84BB2") == 0) ||
                 (strcmp(RFID_ID, ":8C34D72") == 0) ||
                 (strcmp(RFID_ID, ":D420D72") == 0) ||
-                (strcmp(RFID_ID, ":4BB3D62") == 0) ||
-                (strcmp(RFID_ID, ":4C21D72") == 0)
+                (strcmp(RFID_ID, ":4BB3D62") == 0)
+
                 )
         {
             UARTprintf("Giam Toc, Turn off sensor\n");
             bientantoc = 4000;
             boqua = 0;
-
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         else if (
                 (strcmp(RFID_ID, ":0DA9BB2") == 0) ||
@@ -696,12 +1005,12 @@ void Timer1IntHandler(void)
                 (strcmp(RFID_ID, ":D395925") == 0) ||
                 (strcmp(RFID_ID, ":28AAB02") == 0) ||
                 (strcmp(RFID_ID, ":FB1D935") == 0) ||
-                (strcmp(RFID_ID, ":B40D935") == 0) ||
+           //     (strcmp(RFID_ID, ":B40D935") == 0) ||
                 (strcmp(RFID_ID, ":5CC2925") == 0) ||
                 (strcmp(RFID_ID, ":5070925") == 0) ||
                 (strcmp(RFID_ID, ":A08BD72") == 0) ||
-                (strcmp(RFID_ID, ":DC6EDE2") == 0) ||
-                (strcmp(RFID_ID, ":C779D62") == 0) ||
+
+               // (strcmp(RFID_ID, ":C779D62") == 0) ||
                 (strcmp(RFID_ID, ":C69EC05") == 0) ||
                 (strcmp(RFID_ID, ":D050D72") == 0)
                 )
@@ -709,6 +1018,7 @@ void Timer1IntHandler(void)
             UARTprintf("tang toc \n");
             bientantoc = 9000;
             boqua = 1;
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
         /////  ////////////               giam toc /////////////////////////
         else if (
@@ -720,31 +1030,27 @@ void Timer1IntHandler(void)
                 (strcmp(RFID_ID, ":1BC7BB2") == 0) ||
                 (strcmp(RFID_ID, ":4DEBBB2") == 0) ||
                 (strcmp(RFID_ID, ":27C7D62") == 0)  ||
-                (strcmp(RFID_ID, ":EA31D72") == 0) ||
+
                 (strcmp(RFID_ID, ":EFAABB2") == 0) ||
                 (strcmp(RFID_ID, ":6A96D72") == 0) ||
                 (strcmp(RFID_ID, ":DA84D62") == 0) ||
-                (strcmp(RFID_ID, ":0067B22") == 0) ||
-                (strcmp(RFID_ID, ":99C8BB2") == 0) ||
-                (strcmp(RFID_ID, ":EA31D72") == 0) ||
+               // (strcmp(RFID_ID, ":0067B22") == 0) ||
+
+
                 (strcmp(RFID_ID, ":9174D72") == 0) ||
                 (strcmp(RFID_ID, ":F747B12") == 0) ||
-                (strcmp(RFID_ID, ":50E7925") == 0) ||
-                (strcmp(RFID_ID, ":A82FC75") == 0) ||
-                (strcmp(RFID_ID, ":D225D72") == 0)
+
+                (strcmp(RFID_ID, ":A82FC75") == 0)
+             //   (strcmp(RFID_ID, ":D225D72") == 0)
                 )
         {
             UARTprintf("giam toc \n");
             bientantoc = 4000;
             boqua = 1;
+            hienthi_en = QEIPositionGet(QEI0_BASE);
         }
 //////////////////////////////////////////////////////////////////////
-        else if (
-        		(strcmp(RFID_ID, ":52FDD72") == 0)
-				)
-        {
-        	bientantoc = 3000;
-        }
+
         else
         {
             UARTprintf("ERROR: Unknown RFID %s ????\n", RFID_ID);
@@ -979,6 +1285,7 @@ void Timer3IntHandler(void)
         boqua = ROBOTRX_Buffer[3];
         ROBOTTX_Buffer[0] = tram0;
         ROBOTTX_Buffer[2] = boqua;
+        ROBOTRX_Buffer[2] = 0;
     }
 }
 
@@ -1146,7 +1453,7 @@ void dithang(void)
     {
         if (loi == 0)
         {
-            if (bientantoc == 4000)
+            if (bientantoc > 8000)
             {
                 runsenso2();
             }
@@ -1248,41 +1555,39 @@ void runsenso2(void)
                     trai = tocdo - cap[6];
 
                 }
-                else
-                {
-                    if (sensor1[3] == 1)
-                    {
-                        tocdo = tocdo + tocdotan;
-                        biengiamtoc = tocdo;
-                        phai = tocdo + cap[1];
-                        trai = tocdo - cap[1];
+                else {
+					if (sensor1[3] == 1) {
+						tocdo = tocdo + tocdotan;
+						biengiamtoc = tocdo;
+						phai = tocdo + cap[1];
+						trai = tocdo - cap[1];
 
-                    }
-                    if (sensor1[2] == 1)
-                    {
-                        tocdo = tocdo + tocdotan;
-                        biengiamtoc = tocdo;
-                        phai = tocdo + cap[3];
-                        trai = tocdo - cap[3];
+					} else {
+						if (sensor1[2] == 1) {
+							tocdo = tocdo + tocdotan;
+							biengiamtoc = tocdo;
+							phai = tocdo + cap[3];
+							trai = tocdo - cap[3];
 
-                    }
-                    if (sensor1[1] == 1)
-                    {
-                        tocdo = tocdo + tocdotan;
-                        biengiamtoc = tocdo;
-                        phai = tocdo + cap[5];
-                        trai = tocdo - cap[5];
+						} else {
+							if (sensor1[1] == 1) {
+								tocdo = tocdo + tocdotan;
+								biengiamtoc = tocdo;
+								phai = tocdo + cap[5];
+								trai = tocdo - cap[5];
 
-                    }
-                    if (sensor1[0] == 1)
-                    {
-                        tocdo = tocdo + tocdotan;
-                        biengiamtoc = tocdo;
-                        phai = tocdo + cap[7];
-                        trai = tocdo - cap[7];
-                    }
-                }
-            }
+							} else {
+								if (sensor1[0] == 1) {
+									tocdo = tocdo + tocdotan;
+									biengiamtoc = tocdo;
+									phai = tocdo + cap[7];
+									trai = tocdo - cap[7];
+								}
+							}
+						}
+					}
+				}
+			}
         }
 
 ////////////////////////////////////////
@@ -1307,63 +1612,63 @@ void runsenso2(void)
             else
             {
 
-                if (sensor1[6] == 1 && sensor1[7] == 1)
-                {
-                    tocdo = tocdo + tocdotan;
-                    biengiamtoc = tocdo;
-                    phai = tocdo - cap[6];
-                    trai = tocdo + cap[6];
+				if (sensor1[6] == 1 && sensor1[7] == 1) {
+					tocdo = tocdo + tocdotan;
+					biengiamtoc = tocdo;
+					phai = tocdo - cap[6];
+					trai = tocdo + cap[6];
 
-                }
+				}
 
-                else
-                {
-                    if (sensor1[7] == 1)
-                    {
-                        tocdo = tocdo + tocdotan;
-                        biengiamtoc = tocdo;
-                        phai = tocdo - cap[7];
-                        trai = tocdo + cap[7];
+				else {
 
-                    }
-                    if (sensor1[4] == 1)
-                    {
-                        tocdo = tocdo + tocdotan;
-                        biengiamtoc = tocdo;
-                        phai = tocdo - cap[1];
-                        trai = tocdo + cap[1];
+					if (sensor1[4] == 1) {
+						tocdo = tocdo + tocdotan;
+						biengiamtoc = tocdo;
+						phai = tocdo - cap[1];
+						trai = tocdo + cap[1];
 
-                    }
+					}
 
-                    if (sensor1[6] == 1)
-                    {
-                        tocdo = tocdo + tocdotan;
-                        biengiamtoc = tocdo;
-                        phai = tocdo - cap[5];
-                        trai = tocdo + cap[5];
+					else {
+						if (sensor1[5] == 1) {
+							tocdo = tocdo + tocdotan;
+							biengiamtoc = tocdo;
+							phai = tocdo - cap[3];
+							trai = tocdo + cap[3];
 
-                    }
-                    if (sensor1[5] == 1)
-                    {
-                        tocdo = tocdo + tocdotan;
-                        biengiamtoc = tocdo;
-                        phai = tocdo - cap[3];
-                        trai = tocdo + cap[3];
+						} else {
+							if (sensor1[6] == 1) {
+								tocdo = tocdo + tocdotan;
+								biengiamtoc = tocdo;
+								phai = tocdo - cap[5];
+								trai = tocdo + cap[5];
 
-                    }
-                }
+							} else {
+								if (sensor1[7] == 1) {
+									tocdo = tocdo + tocdotan;
+									biengiamtoc = tocdo;
+									phai = tocdo - cap[7];
+									trai = tocdo + cap[7];
+
+								}
+							}
+						}
+					}
+
+				}
             }
 
         }
     }
-    int i;
-    for (i = 0; i < 5; i++)
-    {
-        if ((sensor1[i] == 1) && (sensor1[i + 1] == 0) && (sensor1[i + 2] == 1))
-        {
-            invalid = 9;
-        }
-    }
+//    int i;
+//    for (i = 0; i < 5; i++)
+//    {
+//        if ((sensor1[i] == 1) && (sensor1[i + 1] == 0) && (sensor1[i + 2] == 1)  && (sensor1[i + 3] == 1))
+//        {
+//            invalid = 9;
+//        }
+//    }
 
     if (senso == 0)
 
@@ -1375,11 +1680,13 @@ void runsenso2(void)
             noline_counter = 0;
         }
     }
-    else if (invalid >= 3 && (boqua == 1))
-    {
-        stop1();
-        loi2 = 11;
-    }
+//    else if (invalid >= 6 )
+//    {
+//    	 xoy = 1;
+//    	 QEIPositionSet(QEI0_BASE, 0);
+//         ROBOTTX_Buffer[0] = 1;
+//         tram0 = 1;
+//    }
     else
     {
         noline_counter = 0;
@@ -1564,16 +1871,16 @@ void runsenso1(void)
 
         }
     }
-    int i;
-    for (i = 0; i < 5; i++)
-    {
-        if ((sensor1[i] == 1) && (sensor1[i + 1] == 0) && (sensor1[i + 2] == 1))
-        {
-            invalid = 9;
-        }
-    }
+//    int i;
+//    for (i = 0; i < 5; i++)
+//    {
+//        if ((sensor1[i] == 1) && (sensor1[i + 1] == 0) && (sensor1[i + 2] == 1) && (sensor1[i + 3] == 1) )
+//        {
+//            invalid = 9;
+//        }
+//    }
 
-    if (senso == 0 && ((senso2 & 0x04)>>2) == 0 )
+    if (senso == 0 )
 
     {
         if (++noline_counter == NOLINE_TIMEOUT)
@@ -1583,11 +1890,14 @@ void runsenso1(void)
             noline_counter = 0;
         }
     }
-    else if ((invalid >= 3) )
-    {
-        stop1();
-        loi2 = 11;
-    }
+//    else if ((invalid >= 6) )
+//    {
+//    	xoy = 1;
+//        QEIPositionSet(QEI0_BASE, 0);
+//        ROBOTTX_Buffer[0] = 1;
+//
+//             tram0 = 1;
+//    }
     else
     {
         noline_counter = 0;
@@ -1719,7 +2029,7 @@ void runsenso3(void)
 
 
 
-    if (senso == 0 && ((senso2 & 0x04)>>2) == 0 )
+    if (senso == 0  )
 
     {
         if (++noline_counter == NOLINE_TIMEOUT)

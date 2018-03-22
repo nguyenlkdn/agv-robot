@@ -70,10 +70,11 @@ extern uint32_t rfid_timeout;
  */
 #define SLAVER
 #ifdef SLAVER
-#define ROBOT_RXBUFFER_SIZE        25
-#define ROBOT_TXBUFFER_SIZE        25
-#define ROBTO_TX_MAX_SIZE          10
-#define ROBTO_RX_MAX_SIZE          10
+#define ROBOT_RXBUFFER_SIZE         25
+#define ROBOT_TXBUFFER_SIZE         25
+#define ROBTO_TX_MAX_SIZE           10
+#define ROBTO_RX_MAX_SIZE           10
+#define ENC_SS						1000
 extern uint16_t ROBOTRX_Buffer[ROBTO_TX_MAX_SIZE];
 extern uint16_t ROBOTTX_Buffer[ROBTO_RX_MAX_SIZE];
 #endif
