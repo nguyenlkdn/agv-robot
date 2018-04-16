@@ -142,7 +142,7 @@ int s1, s2, s3;
 //int32_t cap[8] = { 5000, 200, 500, 1000, 1800, 2900, 3300, 4000 };
 int32_t cap[8] = { 6000, 400, 1000, 1700, 2700, 4500, 5500, 6500 };
 int32_t cap1[11] = { 6000, 450, 1000, 1700, 2700, 4000, 5400, 5500, 5500, 5500, 5500 };
-uint32_t enc[16] = { 1, 11000000, 755546, 1080248, 1404142, 178821,2097250, 2418966, 3538359,3841919, 4259864, 4694434, 5030065, 5306035, 5500000, 8265470};
+uint32_t enc[16] = { 1, 11070000, 755546, 1080248, 1404142, 1780821,2097250, 2300483, 3509585,3841919, 4293478, 4694434, 5030065, 5291461, 5500000, 8265470};
 //int32_t cap1[8] = { 4000, 300, 700, 1300, 2000, 2800, 4000, 5200 };
 void runsenso2(void);
 void runsenso1(void);
@@ -243,6 +243,7 @@ void main(void)
 //                         leftm / 240);
 
         GLCDPrintfNormal(0, 2, "Encoder : %3d , %3d %%, ", duong_di , hienthi_en);
+
         if ((sensor1[2] == 1) && (sensor1[3] == 1) && (sensor1[4] == 1) && (sensor1[5] == 1) ||
         	(sensor1[3] == 1) && (sensor1[4] == 1) && (sensor1[5] == 1) && (sensor1[6] == 1) ||
 			(sensor1[1] == 1) && (sensor1[3] == 1) && (sensor1[4] == 1) && (sensor1[6] == 1) ||
@@ -255,8 +256,7 @@ void main(void)
         	xoy = 1;
             QEIPositionSet(QEI0_BASE, 0);
             ROBOTTX_Buffer[0] = 1;
-
-                 tram0 = 1;
+            tram0 = 1;
 
         }
         if(xoy == 1){
@@ -417,14 +417,16 @@ void main(void)
 //*****************************************************************************
 void enc_proc(void) {
 
-	if( ((duong_di > 2863397) && (duong_di < 3093962) ) || ((duong_di > 9805545) && (duong_di < 10108428 )) ) {               // tatws cam bien
+	if( ((duong_di > 2803397) && (duong_di < 3093962) ) || ((duong_di > 9805545) && (duong_di < 10108428 )) ) {               // tatws cam bien
 		bientantoc = 4000;
         boqua = 0;
 	}else {
-		if (((duong_di > 2535580) && ( duong_di < 3412116)) || ((duong_di > 6357780) && (duong_di < 7145930 )) ||  ((duong_di > 7948819) && (duong_di < 8832465) ) || ((duong_di > 10390370) && (duong_di < 10636685) ) || (duong_di > 10902620 )){              // chay cham
+		if (((duong_di > 2535580) && ( duong_di < 2863397)) || ((duong_di > 3093962) && ( duong_di < 3200000))    || ((duong_di > 6357780) && (duong_di < 7145930 )) ||  ((duong_di > 7948819) && (duong_di < 8832465) ) || ((duong_di > 10390370) && (duong_di < 10636685) ) || (duong_di > 10902620 )){              // chay cham
 			bientantoc = 4000;
+			boqua = 1;
 		}else {
 			bientantoc = 9000;
+			boqua = 1;
 		}
 	}
 
